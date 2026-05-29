@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>充电详情 - EV充电小程序</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0891B2',
+            secondary: '#22D3EE',
+            cta: '#22C55E',
+            'app-bg': '#ECFEFF',
+            'app-text': '#164E63',
+          },
+          fontFamily: {
+            sans: ['Fira Sans', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: #0891B2;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .view-field { transition: all 0.2s ease; }
+    .edit-field { transition: all 0.2s ease; }
+    .battery-segment { transition: width 0.5s ease; }
+  </style>
+</head>
+<body class="bg-app-bg font-sans min-h-screen pb-20">
+  <!-- 状态栏 -->
+  <div class="bg-white text-slate-600 px-4 py-2 flex justify-between items-center text-xs border-b border-slate-100">
+    <span>09:41</span>
+    <div class="flex items-center gap-1">
+      <span>100%</span>
+    </div>
+  </div>
+
+  <!-- 头部 -->
+  <header class="bg-white px-4 py-4 border-b border-slate-100 sticky top-0 z-40">
+    <div class="flex items-center justify-between">
+      <a href="history.html" class="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-slate-50 rounded-lg transition-colors">
+        <svg class="w-6 h-6 text-app-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <h1 class="text-lg font-semibold text-app-text">充电详情</h1>
+      <!-- 查看模式: 编辑按钮 -->
+      <button id="btnEdit" class="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-primary/5 rounded-lg transition-colors" onclick="enterEditMode()">
+        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </button>
+      <!-- 编辑模式: 取消按钮 (默认隐藏) -->
+      <button id="btnCancel" class="hidden px-3 py-1.5 text-sm text-slate-600 bg-slate-100 rounded-lg cursor-pointer hover:bg-slate-200 transition-colors" onclick="exitEditMode()">取消</button>
+    </div>
+  </header>
+
+  <div class="px-4 py-4 space-y-4">
+
+    <!-- 车辆 & 充电站 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-4 4v3m-4-3h8m-8 0a4 4 0 01-4-4V7a4 4 0 014-4h8a4 4 0 014 4v4a4 4 0 01-4 4m-8 0v3m8-3v3"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">车辆信息</span>
+      </div>
+      <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
+        <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-4 4v3m-4-3h8m-8 0a4 4 0 01-4-4V7a4 4 0 014-4h8a4 4 0 014 4v4a4 4 0 01-4 4m-8 0v3m8-3v3"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-medium text-app-text">特斯拉 Model 3</p>
+          <p class="text-xs text-slate-500">后轮驱动版 · 60kWh</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 充电站 & 类型 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">充电站</span>
+      </div>
+
+      <!-- 查看模式 -->
+      <div id="viewStation" class="view-field">
+        <div class="flex items-center justify-between">
+          <p class="font-semibold text-app-text">特来电充电站</p>
+          <span class="text-xs px-2 py-0.5 bg-cta/10 text-cta rounded font-medium">快充</span>
+        </div>
+      </div>
+
+      <!-- 编辑模式 -->
+      <div id="editStation" class="edit-field hidden">
+        <div class="relative mb-3">
+          <input type="text" value="特来电充电站" class="w-full h-12 px-4 bg-white border border-slate-200 rounded-lg text-app-text focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span class="text-sm font-medium text-slate-600">充电类型</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2" id="editChargeType">
+          <label class="relative cursor-pointer">
+            <input type="radio" name="editChargeType" value="super" class="peer sr-only">
+            <div class="h-12 flex flex-col items-center justify-center gap-0.5 border-2 border-slate-200 rounded-xl peer-checked:border-violet-500 peer-checked:bg-violet-50 transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-slate-400 peer-checked:text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-2 8 9-12h-7l2-8z"/><path d="M17 2L8 14h7l-2 8 9-12h-7l2-8z" opacity="0.4"/></svg>
+              <span class="text-xs font-medium text-app-text">超充</span>
+            </div>
+          </label>
+          <label class="relative cursor-pointer">
+            <input type="radio" name="editChargeType" value="fast" class="peer sr-only" checked>
+            <div class="h-12 flex flex-col items-center justify-center gap-0.5 border-2 border-primary rounded-xl bg-primary/5 transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span class="text-xs font-medium text-app-text">快充</span>
+            </div>
+          </label>
+          <label class="relative cursor-pointer">
+            <input type="radio" name="editChargeType" value="slow" class="peer sr-only">
+            <div class="h-12 flex flex-col items-center justify-center gap-0.5 border-2 border-slate-200 rounded-xl peer-checked:border-emerald-500 peer-checked:bg-emerald-50 transition-all cursor-pointer">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="text-xs font-medium text-app-text">慢充</span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 充电时间 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">充电时间</span>
+      </div>
+
+      <!-- 查看模式 -->
+      <div id="viewTime" class="view-field">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-app-text">14:30 - 15:45</p>
+            <p class="text-sm text-slate-500 mt-0.5">2026年5月29日 · 周四</p>
+          </div>
+          <div class="text-right">
+            <p class="font-mono font-semibold text-primary">1小时15分</p>
+            <p class="text-xs text-slate-500">充电时长</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 编辑模式 -->
+      <div id="editTime" class="edit-field hidden">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1.5">开始时间</label>
+            <input type="datetime-local" value="2026-05-29T14:30" class="w-full h-12 px-3 bg-white border border-slate-200 rounded-lg text-app-text text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1.5">结束时间</label>
+            <input type="datetime-local" value="2026-05-29T15:45" class="w-full h-12 px-3 bg-white border border-slate-200 rounded-lg text-app-text text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+          </div>
+        </div>
+        <div class="mt-3 p-3 bg-primary/5 rounded-lg">
+          <p class="text-sm text-slate-600">充电时长: <span class="font-mono font-semibold text-primary">1小时15分</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 电量可视化 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">电量变化</span>
+      </div>
+
+      <!-- 电池可视化 -->
+      <div class="px-2">
+        <!-- 电池外壳 -->
+        <div class="relative">
+          <div class="flex items-center gap-1">
+            <!-- 电池正极凸起 -->
+            <div class="w-2 h-4 bg-slate-300 rounded-r-sm"></div>
+            <!-- 电池主体 -->
+            <div class="flex-1 h-14 bg-slate-100 rounded-lg border border-slate-200 overflow-hidden relative">
+              <!-- 未充部分 (0% → 35%) -->
+              <div class="absolute left-0 top-0 h-full bg-slate-200 battery-segment" style="width: 35%"></div>
+              <!-- 充电部分 (35% → 90%) -->
+              <div class="absolute top-0 h-full bg-gradient-to-r from-cta/80 to-cta battery-segment" style="left: 35%; width: 55%"></div>
+              <!-- 百分比刻度 -->
+              <div class="absolute inset-0 flex items-center">
+                <span class="absolute text-xs font-mono font-semibold text-slate-500" style="left: 33%">35%</span>
+                <span class="absolute text-xs font-mono font-semibold text-white" style="left: 62%">90%</span>
+              </div>
+            </div>
+          </div>
+          <!-- 刻度线 -->
+          <div class="flex ml-3 mt-1">
+            <span class="text-xs text-slate-400" style="width: 25%">25</span>
+            <span class="text-xs text-slate-400" style="width: 25%">50</span>
+            <span class="text-xs text-slate-400" style="width: 25%">75</span>
+            <span class="text-xs text-slate-400">100</span>
+          </div>
+        </div>
+
+        <!-- 电量数据行 -->
+        <div class="flex items-center justify-between mt-4">
+          <div class="text-center">
+            <p class="text-xs text-slate-500">起始电量</p>
+            <p class="text-xl font-mono font-bold text-slate-400">35%</p>
+          </div>
+          <div class="flex-1 flex items-center justify-center gap-2 px-4">
+            <div class="h-px flex-1 bg-slate-200"></div>
+            <div class="flex items-center gap-1 bg-cta/10 px-3 py-1.5 rounded-full">
+              <svg class="w-4 h-4 text-cta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+              <span class="font-mono font-semibold text-cta">+55%</span>
+            </div>
+            <div class="h-px flex-1 bg-slate-200"></div>
+          </div>
+          <div class="text-center">
+            <p class="text-xs text-slate-500">结束电量</p>
+            <p class="text-xl font-mono font-bold text-cta">90%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 编辑模式的滑块 -->
+      <div id="editSOC" class="edit-field hidden mt-4 pt-4 border-t border-slate-100">
+        <div class="mb-5">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-slate-600">起始电量</span>
+            <span class="font-mono font-semibold text-primary" id="editStartLabel">35%</span>
+          </div>
+          <input type="range" min="0" max="100" value="35" id="editStartSOC" class="w-full" oninput="document.getElementById('editStartLabel').textContent=this.value+'%'; updateEditBattery()">
+        </div>
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-slate-600">结束电量</span>
+            <span class="font-mono font-semibold text-cta" id="editEndLabel">90%</span>
+          </div>
+          <input type="range" min="0" max="100" value="90" id="editEndSOC" class="w-full" oninput="document.getElementById('editEndLabel').textContent=this.value+'%'; updateEditBattery()">
+        </div>
+      </div>
+    </div>
+
+    <!-- 充电量与费用 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">充电量与费用</span>
+      </div>
+
+      <!-- 查看模式 -->
+      <div id="viewCost" class="view-field">
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="p-3 bg-primary/5 rounded-xl">
+            <p class="text-xs text-slate-500">充电量</p>
+            <p class="text-lg font-mono font-bold text-primary mt-1">45.6<span class="text-xs font-normal ml-0.5">kWh</span></p>
+          </div>
+          <div class="p-3 bg-amber-50 rounded-xl">
+            <p class="text-xs text-slate-500">费用</p>
+            <p class="text-lg font-mono font-bold text-amber-600 mt-1">¥68.40</p>
+          </div>
+          <div class="p-3 bg-cta/5 rounded-xl">
+            <p class="text-xs text-slate-500">单价</p>
+            <p class="text-lg font-mono font-bold text-cta mt-1">¥1.50<span class="text-xs font-normal">/kWh</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 编辑模式 -->
+      <div id="editCost" class="edit-field hidden">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1.5">充电量</label>
+            <div class="relative">
+              <input type="number" value="45.6" step="0.1" class="w-full h-12 px-4 pr-12 bg-white border border-slate-200 rounded-lg text-app-text font-mono focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">kWh</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1.5">充电费用</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">¥</span>
+              <input type="number" value="68.40" step="0.01" class="w-full h-12 pl-8 pr-4 bg-white border border-slate-200 rounded-lg text-app-text font-mono focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 p-3 bg-amber-50/80 rounded-lg flex items-center justify-between">
+          <p class="text-sm text-slate-600">单价: <span class="font-mono font-semibold text-amber-600">¥1.50</span>/kWh</p>
+          <p class="text-sm text-slate-600">平均功率: <span class="font-mono font-semibold text-primary">36.5 kW</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 充电效率 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">充电效率</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-xl">
+          <div class="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">充电损耗</p>
+            <p class="font-mono font-semibold text-cta">-2.1%</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-primary/5 rounded-xl">
+          <div class="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500">平均功率</p>
+            <p class="font-mono font-semibold text-app-text">36.5 kW</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 里程 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">里程</span>
+      </div>
+
+      <!-- 查看模式 -->
+      <div id="viewMileage" class="view-field">
+        <div class="flex items-center justify-between p-3 bg-primary/5 rounded-xl">
+          <div>
+            <p class="text-xs text-slate-500">充电完成时总里程</p>
+            <p class="font-mono font-semibold text-app-text mt-0.5">12,580 km</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-slate-500">百公里电耗</p>
+            <p class="font-mono font-semibold text-primary mt-0.5">15.2 kWh</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 编辑模式 -->
+      <div id="editMileage" class="edit-field hidden">
+        <div class="relative">
+          <input type="number" value="12580" class="w-full h-12 px-4 pr-12 bg-white border border-slate-200 rounded-lg text-app-text font-mono focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">km</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2">用于计算百公里电耗和成本</p>
+      </div>
+    </div>
+
+    <!-- 备注 -->
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-3">
+        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+        </svg>
+        <span class="text-sm font-medium text-slate-600">备注</span>
+      </div>
+
+      <!-- 查看模式 -->
+      <div id="viewRemark" class="view-field">
+        <p class="text-sm text-slate-600">地下车库B2层充电桩，环境不错，桩功率稳定</p>
+      </div>
+
+      <!-- 编辑模式 -->
+      <div id="editRemark" class="edit-field hidden">
+        <textarea rows="3" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-app-text placeholder-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-colors resize-none">地下车库B2层充电桩，环境不错，桩功率稳定</textarea>
+      </div>
+    </div>
+
+    <!-- 编辑模式: 保存按钮 -->
+    <div id="saveArea" class="hidden pt-2">
+      <button type="button" onclick="saveRecord()" class="w-full h-14 bg-cta text-white font-semibold rounded-xl hover:bg-cta/90 transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-cta/20">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        保存修改
+      </button>
+    </div>
+
+    <!-- 删除记录 -->
+    <div class="pt-2">
+      <button type="button" onclick="confirmDelete()" class="w-full py-3 text-red-500 text-sm font-medium cursor-pointer hover:bg-red-50 rounded-xl transition-colors flex items-center justify-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+        删除记录
+      </button>
+    </div>
+  </div>
+
+  <!-- 删除确认弹窗 -->
+  <div id="deleteModal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-end justify-center" onclick="closeDeleteModal(event)">
+    <div class="bg-white rounded-t-2xl w-full max-w-md p-6" onclick="event.stopPropagation()">
+      <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+      <h3 class="text-lg font-semibold text-app-text text-center mb-2">确认删除</h3>
+      <p class="text-sm text-slate-500 text-center mb-6">删除后无法恢复，确定要删除这条充电记录吗？</p>
+      <div class="space-y-3">
+        <button onclick="deleteRecord()" class="w-full h-12 bg-red-500 text-white font-medium rounded-xl cursor-pointer hover:bg-red-600 transition-colors">删除</button>
+        <button onclick="closeDeleteModal()" class="w-full h-12 bg-slate-100 text-slate-600 font-medium rounded-xl cursor-pointer hover:bg-slate-200 transition-colors">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isEditMode = false;
+
+    function enterEditMode() {
+      isEditMode = true;
+      // 隐藏查看模式
+      document.querySelectorAll('.view-field').forEach(function(el) { el.classList.add('hidden'); });
+      // 显示编辑模式
+      document.querySelectorAll('.edit-field').forEach(function(el) { el.classList.remove('hidden'); });
+      // 切换头部按钮
+      document.getElementById('btnEdit').classList.add('hidden');
+      document.getElementById('btnCancel').classList.remove('hidden');
+      // 显示保存区域
+      document.getElementById('saveArea').classList.remove('hidden');
+    }
+
+    function exitEditMode() {
+      isEditMode = false;
+      // 显示查看模式
+      document.querySelectorAll('.view-field').forEach(function(el) { el.classList.remove('hidden'); });
+      // 隐藏编辑模式
+      document.querySelectorAll('.edit-field').forEach(function(el) { el.classList.add('hidden'); });
+      // 切换头部按钮
+      document.getElementById('btnEdit').classList.remove('hidden');
+      document.getElementById('btnCancel').classList.add('hidden');
+      // 隐藏保存区域
+      document.getElementById('saveArea').classList.add('hidden');
+    }
+
+    function saveRecord() {
+      // 模拟保存
+      exitEditMode();
+      // 临时提示
+      showToast('保存成功');
+    }
+
+    function confirmDelete() {
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    function deleteRecord() {
+      closeDeleteModal();
+      showToast('记录已删除');
+      setTimeout(function() { location.href = 'history.html'; }, 1000);
+    }
+
+    function showToast(msg) {
+      var toast = document.createElement('div');
+      toast.className = 'fixed top-16 left-1/2 -translate-x-1/2 bg-app-text text-white px-5 py-3 rounded-xl text-sm font-medium shadow-lg z-[60] transition-opacity duration-300';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.style.opacity = '0'; }, 1500);
+      setTimeout(function() { toast.remove(); }, 1800);
+    }
+
+    function updateEditBattery() {
+      var start = parseInt(document.getElementById('editStartSOC').value);
+      var end = parseInt(document.getElementById('editEndSOC').value);
+      // 可扩展: 更新电池可视化
+    }
+
+    // 充电类型切换 (编辑模式)
+    var typeColors = {
+      super: { border: 'border-violet-500', bg: 'bg-violet-50', icon: 'text-violet-500' },
+      fast:  { border: 'border-primary', bg: 'bg-primary/5', icon: 'text-primary' },
+      slow:  { border: 'border-emerald-500', bg: 'bg-emerald-50', icon: 'text-emerald-500' },
+    };
+    var defaultTypeStyle = { border: 'border-slate-200', bg: '', icon: 'text-slate-400' };
+
+    document.querySelectorAll('#editChargeType input[name="editChargeType"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('#editChargeType input[name="editChargeType"]').forEach(function(r) {
+          var card = r.nextElementSibling;
+          var svg = card.querySelector('svg');
+          card.classList.remove('border-primary', 'bg-primary/5', 'border-violet-500', 'bg-violet-50', 'border-emerald-500', 'bg-emerald-50', 'border-slate-200');
+          svg.classList.remove('text-primary', 'text-violet-500', 'text-emerald-500', 'text-slate-400');
+          if (r.checked) {
+            var s = typeColors[r.value];
+            card.classList.add(s.border, s.bg);
+            svg.classList.add(s.icon);
+          } else {
+            card.classList.add(defaultTypeStyle.border);
+            svg.classList.add(defaultTypeStyle.icon);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

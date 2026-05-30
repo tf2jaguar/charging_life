@@ -1,0 +1,3 @@
+<view class="glass-card custom-class {{padding ? 'glass-card-padded' : ''}} {{hover ? 'glass-card-hover' : ''}}">
+  <slot></slot>
+</view>

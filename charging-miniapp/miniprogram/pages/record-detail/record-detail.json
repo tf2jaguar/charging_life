@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "glass-card": "/components/glass-card/glass-card",
+    "charge-type-radio": "/components/charge-type-radio/charge-type-radio",
+    "battery-visual": "/components/battery-visual/battery-visual",
+    "delete-confirm": "/components/delete-confirm/delete-confirm"
+  },
+  "navigationBarTitleText": "充电详情",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black"
+}

@@ -1,0 +1,44 @@
+<view class="battery-visual">
+  <!-- 电池外壳 -->
+  <view class="battery-shell">
+    <view class="battery-tip"></view>
+    <view class="battery-body">
+      <!-- 未充部分 -->
+      <view class="battery-empty" style="width: {{startSOC}}%"></view>
+      <!-- 充电部分 -->
+      <view class="battery-charged" style="left: {{startSOC}}%; width: {{endSOC - startSOC}}%"></view>
+      <!-- 百分比标注 -->
+      <view class="battery-labels">
+        <text class="label-start" style="left: {{startSOC > 15 ? startSOC - 8 : 2}}%">{{startSOC}}%</text>
+        <text class="label-end" style="left: {{(startSOC + endSOC) / 2}}%">{{endSOC}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 刻度线 -->
+  <view class="scale-line">
+    <text class="scale-num">25</text>
+    <text class="scale-num">50</text>
+    <text class="scale-num">75</text>
+    <text class="scale-num">100</text>
+  </view>
+
+  <!-- 数据行 -->
+  <view class="soc-row">
+    <view class="soc-item">
+      <text class="soc-label">起始电量</text>
+      <text class="soc-value soc-value-gray">{{startSOC}}%</text>
+    </view>
+    <view class="soc-delta">
+      <view class="soc-delta-line"></view>
+      <view class="soc-delta-pill">
+        <text class="soc-delta-text">+{{delta}}%</text>
+      </view>
+      <view class="soc-delta-line"></view>
+    </view>
+    <view class="soc-item">
+      <text class="soc-label">结束电量</text>
+      <text class="soc-value soc-value-green">{{endSOC}}%</text>
+    </view>
+  </view>
+</view>

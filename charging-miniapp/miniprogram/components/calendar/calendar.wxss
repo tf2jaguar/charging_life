@@ -1,0 +1,245 @@
+.calendar {
+  padding: 40rpx;
+}
+
+/* 标题行 */
+.calendar-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.calendar-title-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.calendar-title-icon {
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(8, 145, 178, 0.1);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.calendar-title-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #164E63;
+}
+
+.calendar-title-more {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.calendar-more-text {
+  font-size: 26rpx;
+  color: #0891B2;
+}
+
+.calendar-more-arrow {
+  font-size: 28rpx;
+  color: #0891B2;
+}
+
+/* 月份导航 */
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.nav-btn {
+  width: 72rpx;
+  height: 72rpx;
+  min-width: 72rpx;
+  min-height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+}
+
+.nav-btn:active {
+  background: rgba(8, 145, 178, 0.1);
+}
+
+.nav-arrow {
+  font-size: 40rpx;
+  color: #0891B2;
+  font-weight: 300;
+}
+
+.month-info {
+  text-align: center;
+}
+
+.month-label {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #164E63;
+  display: block;
+}
+
+.month-stats {
+  font-size: 22rpx;
+  color: #0891B2;
+  font-weight: 500;
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 星期表头 */
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 16rpx;
+}
+
+.weekday-cell {
+  text-align: center;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: #94A3B8;
+  padding: 8rpx 0;
+}
+
+.weekday-weekend {
+  color: rgba(8, 145, 178, 0.6);
+}
+
+/* 日历网格 */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12rpx;
+}
+
+.day-cell {
+  height: 88rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+}
+
+.day-empty {
+  height: 88rpx;
+}
+
+.day-num {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.day-bolt {
+  font-size: 18rpx;
+  margin-top: 4rpx;
+  line-height: 1;
+}
+
+.day-normal {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2rpx solid #f1f5f9;
+}
+
+.day-normal .day-num { color: #cbd5e1; }
+
+.day-charged {
+  background: rgba(8, 145, 178, 0.1);
+  border: 2rpx solid rgba(8, 145, 178, 0.2);
+}
+
+.day-charged .day-num { color: #164E63; font-weight: 500; }
+.day-charged .day-bolt { color: #0891B2; }
+
+.day-today {
+  background: rgba(8, 145, 178, 0.1);
+  border: 4rpx solid #0891B2;
+}
+
+.day-today .day-num { color: #0891B2; font-weight: 600; }
+
+.day-today-charged {
+  background: #0891B2;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(8, 145, 178, 0.3);
+}
+
+.day-today-charged .day-num { color: #fff; font-weight: 600; }
+.day-today-charged .day-bolt { color: rgba(255, 255, 255, 0.8); }
+
+/* 底部图例 */
+.calendar-legend {
+  margin-top: 32rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid rgba(241, 245, 249, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legend-summary {
+  font-size: 22rpx;
+  color: #94A3B8;
+}
+
+.legend-items {
+  display: flex;
+  gap: 24rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-box {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.legend-box-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+}
+
+.legend-box-charged {
+  background: rgba(8, 145, 178, 0.15);
+  border: 2rpx solid rgba(8, 145, 178, 0.2);
+}
+
+.legend-dot-charged { background: #0891B2; }
+
+.legend-box-normal {
+  background: #fff;
+  border: 2rpx solid #e2e8f0;
+}
+
+.legend-box-today {
+  background: #0891B2;
+  box-shadow: 0 2rpx 8rpx rgba(8, 145, 178, 0.3);
+}
+
+.legend-dot-today { background: #fff; }
+
+.legend-text {
+  font-size: 22rpx;
+  color: #94A3B8;
+}

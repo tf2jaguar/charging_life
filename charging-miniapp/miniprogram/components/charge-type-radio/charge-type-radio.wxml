@@ -1,0 +1,15 @@
+<view class="type-radio">
+  <view
+    wx:for="{{types}}"
+    wx:key="key"
+    class="type-card {{value === item.key ? 'type-card-active' : ''}}"
+    style="{{value === item.key ? 'border-color:' + item.borderActive + ';background:' + item.bg : ''}}"
+    data-key="{{item.key}}"
+    bindtap="onSelect"
+  >
+    <view class="type-icon" style="{{value === item.key ? 'color:' + item.color : ''}}">
+      <text class="icon-bolt" style="{{value === item.key ? 'color:' + item.color : ''}}">⚡</text>
+    </view>
+    <text class="type-label">{{item.label}}</text>
+  </view>
+</view>

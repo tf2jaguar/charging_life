@@ -1,0 +1,11 @@
+<view class="modal-mask {{show ? 'modal-show' : ''}}" bindtap="onMaskClick">
+  <view class="modal-content" catchtap="">
+    <view class="modal-handle"></view>
+    <text class="modal-title">{{title}}</text>
+    <text class="modal-message">{{message}}</text>
+    <view class="modal-actions">
+      <button class="modal-btn modal-btn-danger" bindtap="onConfirm">删除</button>
+      <button class="modal-btn modal-btn-cancel" bindtap="onCancel">取消</button>
+    </view>
+  </view>
+</view>

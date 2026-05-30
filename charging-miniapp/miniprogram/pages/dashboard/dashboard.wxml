@@ -1,0 +1,167 @@
+<view class="page">
+  <!-- 状态栏占位 -->
+  <view class="status-bar" style="height: {{statusBarHeight}}px"></view>
+
+  <!-- Primary头部 -->
+  <view class="header-primary">
+    <!-- 问候区 -->
+    <view class="header-top">
+      <view class="greeting-area">
+        <text class="greeting-text">{{greeting}}</text>
+        <text class="user-name">{{nickName}}</text>
+      </view>
+      <view class="header-actions">
+        <view class="action-btn" bindtap="goToProfile">
+          <text class="action-icon">🔔</text>
+        </view>
+        <view class="action-btn" bindtap="goToProfile">
+          <text class="action-icon">⚙</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 车辆信息卡 -->
+    <view class="vehicle-card glass-card" bindtap="goToProfile" wx:if="{{defaultVehicle}}">
+      <view class="vehicle-content">
+        <view class="vehicle-icon">🚗</view>
+        <view class="vehicle-info">
+          <text class="vehicle-name">{{defaultVehicle.brand}} {{defaultVehicle.model}}</text>
+          <text class="vehicle-trim">{{defaultVehicle.trim}} · {{defaultVehicle.batteryCapacity}}kWh</text>
+        </view>
+        <view class="vehicle-charge-info" wx:if="{{lastChargeKwh}}">
+          <view class="vehicle-charge-kwh">
+            <text class="vehicle-charge-icon">⚡</text>
+            <text class="vehicle-charge-value">{{lastChargeKwh}} kWh</text>
+          </view>
+          <text class="vehicle-charge-time">上次充电 · {{lastChargeTimeText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-entry glass-card">
+    <view class="entry-grid">
+      <view class="entry-item" bindtap="goToAddRecord">
+        <view class="entry-icon entry-icon-cta">+</view>
+        <text class="entry-text">新增记录</text>
+      </view>
+      <view class="entry-item">
+        <view class="entry-icon entry-icon-primary">⌗</view>
+        <text class="entry-text">扫码充电</text>
+      </view>
+      <view class="entry-item">
+        <view class="entry-icon entry-icon-amber">📍</view>
+        <text class="entry-text">附近电站</text>
+      </view>
+      <view class="entry-item" bindtap="goToAnalytics">
+        <view class="entry-icon entry-icon-violet">📊</view>
+        <text class="entry-text">统计分析</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 本月概览 -->
+  <view class="overview-section" wx:if="{{overview}}">
+    <text class="section-title">本月概览</text>
+    <view class="overview-grid">
+      <stat-card
+        icon="⚡" iconBg="rgba(8,145,178,0.1)" iconColor="#0891B2"
+        label="充电次数"
+        value="{{overview.count.value}}"
+        unit="次"
+        change="{{overview.count.direction === 'positive' ? '↑' + overview.count.change + '%' : overview.count.direction === 'negative' ? '↓' + Math.abs(overview.count.change) + '%' : ''}}"
+        changePositive="{{overview.count.direction === 'positive'}}"
+      />
+      <stat-card
+        icon="✓" iconBg="rgba(34,197,94,0.1)" iconColor="#22C55E"
+        label="充电量"
+        value="{{overview.kwh.value}}"
+        unit="kWh"
+        change="{{overview.kwh.direction === 'positive' ? '↑' + overview.kwh.change + '%' : overview.kwh.direction === 'negative' ? '↓' + Math.abs(overview.kwh.change) + '%' : ''}}"
+        changePositive="{{overview.kwh.direction === 'positive'}}"
+      />
+      <stat-card
+        icon="💰" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
+        label="充电费用"
+        value="¥{{overview.costDisplay}}"
+        change="{{overview.cost.direction === 'negative' ? '↑' + Math.abs(overview.cost.change) + '%' : overview.cost.direction === 'positive' ? '↓' + overview.cost.change + '%' : ''}}"
+        changePositive="{{overview.cost.direction === 'positive'}}"
+      />
+      <stat-card
+        icon="📈" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
+        label="平均单价"
+        value="¥{{overview.avgPriceDisplay}}"
+        unit="/kWh"
+        change="{{overview.avgPrice.direction === 'positive' ? '↓' + Math.abs(overview.avgPrice.change) + '%' : ''}}"
+        changePositive="{{overview.avgPrice.direction === 'positive'}}"
+      />
+      <stat-card
+        icon="⏱" iconBg="rgba(139,92,246,0.1)" iconColor="#8B5CF6"
+        label="充电总时长"
+        value="{{overview.durationDisplay}}"
+        unit="小时"
+        change="{{overview.duration.direction === 'positive' ? '↑' + overview.duration.change + '%' : overview.duration.direction === 'negative' ? '↓' + Math.abs(overview.duration.change) + '%' : ''}}"
+        changePositive="{{overview.duration.direction === 'positive'}}"
+      />
+      <stat-card
+        icon="🔋" iconBg="rgba(244,63,94,0.1)" iconColor="#F43F5E"
+        label="百公里电耗"
+        value="{{overview.perHundredKwhDisplay}}"
+        unit="kWh"
+        change="{{overview.perHundredKwh.direction === 'negative' ? '↓' + Math.abs(overview.perHundredKwh.change) + '%' : overview.perHundredKwh.direction === 'positive' ? '↑' + overview.perHundredKwh.change + '%' : ''}}"
+        changePositive="{{overview.perHundredKwh.direction === 'negative'}}"
+      />
+      <stat-card
+        icon="🗺" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
+        label="百公里成本"
+        value="¥{{overview.perHundredCostDisplay}}"
+        change="{{overview.perHundredCost.direction === 'negative' ? '↓' + Math.abs(overview.perHundredCost.change) + '%' : overview.perHundredCost.direction === 'positive' ? '↑' + overview.perHundredCost.change + '%' : ''}}"
+        changePositive="{{overview.perHundredCost.direction === 'negative'}}"
+        fullSpan="{{true}}"
+      />
+    </view>
+  </view>
+
+  <!-- 充电日历 -->
+  <view class="calendar-section">
+    <view class="calendar-card glass-card">
+      <calendar
+        chargedDays="{{calendarDays}}"
+        kwhMap="{{calendarKwh}}"
+        totalCount="{{calendarCount}}"
+        totalKwh="{{calendarTotalKwh}}"
+        bind:monthChange="onCalendarMonthChange"
+      />
+    </view>
+  </view>
+
+  <!-- 最近充电 -->
+  <view class="recent-section" wx:if="{{recentRecords.length}}">
+    <view class="recent-header">
+      <text class="section-title">最近充电</text>
+      <text class="recent-more" bindtap="goToHistory">全部记录 ›</text>
+    </view>
+    <view class="recent-list">
+      <view
+        wx:for="{{recentRecords}}"
+        wx:key="_id"
+        class="recent-item glass-card"
+        data-id="{{item._id}}"
+        bindtap="goToDetail"
+      >
+        <view class="recent-item-left">
+          <view class="recent-item-icon {{item.chargeType === 'slow' ? 'icon-slow' : 'icon-fast'}}">⚡</view>
+          <view class="recent-item-info">
+            <text class="recent-item-name">{{item.stationName}}</text>
+            <text class="recent-item-time">{{item.timeText}}</text>
+          </view>
+        </view>
+        <view class="recent-item-right">
+          <text class="recent-item-kwh font-mono">{{item.chargeKwh}} kWh</text>
+          <text class="recent-item-cost">¥{{item.cost}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

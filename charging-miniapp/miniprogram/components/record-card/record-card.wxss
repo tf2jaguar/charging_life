@@ -1,0 +1,143 @@
+.record-card {
+  padding: 32rpx;
+  display: block;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.record-card-active {
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
+
+.record-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+}
+
+.record-icon {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.record-icon-fast {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+}
+
+.record-icon-slow {
+  background: rgba(8, 145, 178, 0.1);
+  color: #0891B2;
+}
+
+.record-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 4rpx;
+}
+
+.record-name {
+  font-weight: 600;
+  font-size: 30rpx;
+  color: var(--app-text, #164E63);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-time {
+  font-size: 24rpx;
+  color: #94A3B8;
+}
+
+.record-cost {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.record-kwh {
+  font-weight: 600;
+  font-size: 30rpx;
+  color: var(--app-text, #164E63);
+  display: block;
+}
+
+.record-fee {
+  font-size: 24rpx;
+  color: #94A3B8;
+}
+
+.record-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  gap: 24rpx;
+}
+
+.detail-item {
+  flex: 1;
+}
+
+.detail-item-right {
+  text-align: right;
+}
+
+.detail-label {
+  font-size: 22rpx;
+  color: #94A3B8;
+  display: block;
+}
+
+.detail-value {
+  font-weight: 600;
+  font-size: 28rpx;
+  color: var(--app-text, #164E63);
+}
+
+.fee-value {
+  color: #D97706;
+}
+
+.record-efficiency {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+}
+
+.efficiency-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.efficiency-label {
+  font-size: 22rpx;
+  color: #94A3B8;
+}
+
+.efficiency-value {
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.efficiency-good { color: #22C55E; }
+.efficiency-warn { color: #EF4444; }

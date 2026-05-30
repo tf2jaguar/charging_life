@@ -1,0 +1,55 @@
+<view class="page page-content">
+  <!-- 筛选标签 -->
+  <view class="filter-bar">
+    <scroll-view scroll-x class="filter-scroll">
+      <view
+        wx:for="{{filters}}"
+        wx:key="index"
+        class="filter-pill {{activeFilter === index ? 'filter-active' : ''}}"
+        data-index="{{index}}"
+        bindtap="onFilterTap"
+      >{{item}}</view>
+    </scroll-view>
+  </view>
+
+  <!-- 统计概览 -->
+  <view class="overview-card glass-card">
+    <view class="overview-row">
+      <view class="overview-left">
+        <text class="overview-label">本月统计</text>
+        <text class="overview-value font-mono">{{totalCount}} 次</text>
+      </view>
+      <view class="overview-right">
+        <text class="overview-label">充电量 / 费用</text>
+        <text class="overview-value font-mono">{{totalKwh}} kWh · ¥{{totalCost}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="record-list">
+    <block wx:for="{{groupedRecords}}" wx:key="label">
+      <text class="date-label">{{item.label}}</text>
+      <view class="record-group">
+        <record-card
+          wx:for="{{item.records}}"
+          wx:for-item="record"
+          wx:key="_id"
+          record="{{record}}"
+        />
+      </view>
+    </block>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}" bindtap="onLoadMore">
+    <text class="load-more-text">加载更多</text>
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty-state" wx:if="{{!loading && groupedRecords.length === 0}}">
+    <text class="empty-icon">🔋</text>
+    <text class="empty-text">暂无充电记录</text>
+    <text class="empty-hint">点击底部录入按钮添加第一条记录</text>
+  </view>
+</view>

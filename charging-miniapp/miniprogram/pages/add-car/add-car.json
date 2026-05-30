@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "glass-card": "/components/glass-card/glass-card"
+  },
+  "navigationBarTitleText": "添加车辆",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black"
+}

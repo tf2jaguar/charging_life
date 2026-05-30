@@ -1,0 +1,13 @@
+<view class="stat-card {{fullSpan ? 'stat-card-full' : ''}}">
+  <view class="stat-header">
+    <view class="stat-icon" style="background: {{iconBg}}">
+      <text style="color: {{iconColor}}">{{icon}}</text>
+    </view>
+    <text class="stat-label">{{label}}</text>
+  </view>
+  <view class="stat-value-row">
+    <text class="stat-value font-mono">{{value}}</text>
+    <text class="stat-unit" wx:if="{{unit}}">{{unit}}</text>
+  </view>
+  <text class="stat-change {{changePositive ? 'stat-change-up' : 'stat-change-down'}}" wx:if="{{change}}">{{change}}</text>
+</view>

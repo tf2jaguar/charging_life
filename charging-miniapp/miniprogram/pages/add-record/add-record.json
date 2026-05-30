@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "glass-card": "/components/glass-card/glass-card",
+    "charge-type-radio": "/components/charge-type-radio/charge-type-radio"
+  },
+  "navigationBarTitleText": "充电录入",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black"
+}

@@ -1,0 +1,89 @@
+<view class="page page-content">
+  <!-- 品牌 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">🏷</text>
+      <text>品牌</text>
+    </view>
+    <picker range="{{brands}}" value="{{brandIndex}}" bindchange="onBrandChange">
+      <view class="input-field picker-field">
+        <text wx:if="{{brandIndex >= 0}}">{{brands[brandIndex]}}</text>
+        <text wx:else class="placeholder">请选择品牌</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 型号 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">💻</text>
+      <text>型号</text>
+    </view>
+    <picker range="{{models}}" value="{{modelIndex}}" bindchange="onModelChange" disabled="{{brandIndex < 0}}">
+      <view class="input-field picker-field {{brandIndex < 0 ? 'input-disabled' : ''}}">
+        <text wx:if="{{modelIndex >= 0}}">{{models[modelIndex]}}</text>
+        <text wx:else class="placeholder">{{brandIndex < 0 ? '请先选择品牌' : '请选择型号'}}</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 款式 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">📦</text>
+      <text>款式</text>
+    </view>
+    <picker range="{{trims}}" value="{{trimIndex}}" bindchange="onTrimChange" disabled="{{modelIndex < 0}}">
+      <view class="input-field picker-field {{modelIndex < 0 ? 'input-disabled' : ''}}">
+        <text wx:if="{{trimIndex >= 0}}">{{trims[trimIndex]}}</text>
+        <text wx:else class="placeholder">{{modelIndex < 0 ? '请先选择型号' : '请选择款式'}}</text>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 电池容量 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">⚡</text>
+      <text>电池容量</text>
+    </view>
+    <picker range="{{batteryOptions}}" value="{{batteryIndex}}" bindchange="onBatteryChange" disabled="{{trimIndex < 0}}">
+      <view class="input-field picker-field {{trimIndex < 0 ? 'input-disabled' : ''}}">
+        <text wx:if="{{batteryIndex >= 0}}">{{batteryOptions[batteryIndex]}}</text>
+        <text wx:else class="placeholder">{{trimIndex < 0 ? '请先选择款式' : '请选择容量'}}</text>
+      </view>
+    </picker>
+    <text class="hint-text" wx:if="{{batteryHint}}">根据款式自动匹配，也可手动修改</text>
+  </view>
+
+  <!-- 车牌号 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">📄</text>
+      <text>车牌号</text>
+    </view>
+    <input class="input-field font-mono" placeholder="如：沪A·12345" value="{{plateNumber}}" bindinput="onPlateInput" />
+  </view>
+
+  <!-- 设为默认 -->
+  <view class="form-group glass-card">
+    <view class="default-row">
+      <text class="default-text">设为默认车辆</text>
+      <switch checked="{{isDefault}}" bindchange="onDefaultToggle" color="#22C55E" />
+    </view>
+  </view>
+
+  <!-- 提交 -->
+  <view class="submit-area">
+    <button class="btn-primary" bindtap="onSubmit" disabled="{{submitting}}">
+      ✓ 保存车辆
+    </button>
+  </view>
+
+  <!-- 反馈 -->
+  <view class="feedback-box">
+    <text class="feedback-text">没找到自己的车型和款式？请发邮件反馈
+      <text class="feedback-link">evfeedback@gmail.com</text>
+    </text>
+  </view>
+</view>

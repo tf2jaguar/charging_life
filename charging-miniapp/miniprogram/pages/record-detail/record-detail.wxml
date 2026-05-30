@@ -1,0 +1,202 @@
+<view class="page page-content" wx:if="{{record}}">
+  <!-- 车辆信息 -->
+  <view class="form-group glass-card" wx:if="{{record.vehicleInfo}}">
+    <view class="form-label">
+      <text class="form-icon">🚗</text>
+      <text>车辆信息</text>
+    </view>
+    <view class="vehicle-info-box">
+      <text class="vehicle-name-text">{{record.vehicleInfo.brand}} {{record.vehicleInfo.model}}</text>
+      <text class="vehicle-trim-text">{{record.vehicleInfo.trim}} · {{record.vehicleInfo.batteryCapacity}}kWh</text>
+    </view>
+  </view>
+
+  <!-- 充电站 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">📍</text>
+      <text>充电站</text>
+    </view>
+    <!-- 查看 -->
+    <view wx:if="{{!isEditMode}}" class="view-field">
+      <view class="station-row">
+        <text class="station-name">{{record.stationName}}</text>
+        <text class="{{record.chargeType === 'fast' ? 'tag-fast' : record.chargeType === 'super' ? 'tag-super' : 'tag-slow'}}">
+          {{record.chargeType === 'super' ? '超充' : record.chargeType === 'fast' ? '快充' : '慢充'}}
+        </text>
+      </view>
+    </view>
+    <!-- 编辑 -->
+    <view wx:else class="edit-field">
+      <input class="input-field" value="{{editStationName}}" bindinput="onEditStationInput" />
+      <view class="form-label" style="margin-top: 24rpx;">
+        <text class="form-icon">⚡</text>
+        <text>充电类型</text>
+      </view>
+      <charge-type-radio value="{{editChargeType}}" bind:change="onEditChargeTypeChange" />
+    </view>
+  </view>
+
+  <!-- 充电时间 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">🕐</text>
+      <text>充电时间</text>
+    </view>
+    <view wx:if="{{!isEditMode}}" class="view-field">
+      <view class="time-info">
+        <view class="time-left">
+          <text class="time-range">{{record.startTimeText}}</text>
+          <text class="time-date">{{record.dateText}}</text>
+        </view>
+        <view class="time-right">
+          <text class="duration-text font-mono">{{record.durationText}}</text>
+          <text class="duration-label">充电时长</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 电量可视化 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">🔋</text>
+      <text>电量变化</text>
+    </view>
+    <battery-visual
+      wx:if="{{!isEditMode}}"
+      startSOC="{{record.startSOC}}"
+      endSOC="{{record.endSOC}}"
+    />
+    <!-- 编辑模式slider -->
+    <view wx:else class="edit-field">
+      <view class="slider-group">
+        <view class="slider-header">
+          <text class="slider-label">起始电量</text>
+          <text class="slider-value font-mono">{{editStartSOC}}%</text>
+        </view>
+        <slider min="0" max="100" value="{{editStartSOC}}" activeColor="#0891B2" bindchange="onEditStartSOCChange" />
+      </view>
+      <view class="slider-group">
+        <view class="slider-header">
+          <text class="slider-label">结束电量</text>
+          <text class="slider-value font-mono" style="color: #22C55E;">{{editEndSOC}}%</text>
+        </view>
+        <slider min="0" max="100" value="{{editEndSOC}}" activeColor="#22C55E" bindchange="onEditEndSOCChange" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 充电量与费用 -->
+  <view class="form-group glass-card">
+    <view class="form-label">
+      <text class="form-icon">📊</text>
+      <text>充电量与费用</text>
+    </view>
+    <view wx:if="{{!isEditMode}}" class="view-field">
+      <view class="cost-grid">
+        <view class="cost-item cost-item-primary">
+          <text class="cost-label">充电量</text>
+          <text class="cost-value font-mono">{{record.chargeKwh}} kWh</text>
+        </view>
+        <view class="cost-item cost-item-amber">
+          <text class="cost-label">费用</text>
+          <text class="cost-value font-mono">¥{{record.cost}}</text>
+        </view>
+        <view class="cost-item cost-item-cta">
+          <text class="cost-label">单价</text>
+          <text class="cost-value font-mono">¥{{record.unitPrice}}/kWh</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="edit-field">
+      <view class="edit-cost-row">
+        <view class="edit-cost-field">
+          <text class="time-label">充电量</text>
+          <input class="input-field" type="digit" value="{{editChargeKwh}}" bindinput="onEditChargeKwhInput" />
+        </view>
+        <view class="edit-cost-field">
+          <text class="time-label">充电费用</text>
+          <input class="input-field" type="digit" value="{{editCost}}" bindinput="onEditCostInput" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 充电效率 -->
+  <view class="form-group glass-card" wx:if="{{!isEditMode}}">
+    <view class="form-label">
+      <text class="form-icon">📈</text>
+      <text>充电效率</text>
+    </view>
+    <view class="efficiency-grid">
+      <view class="efficiency-item">
+        <text class="efficiency-label">充电损耗</text>
+        <text class="efficiency-value font-mono" style="color: #22C55E;">{{record.chargeLoss ? record.chargeLoss + '%' : '--'}}</text>
+      </view>
+      <view class="efficiency-item">
+        <text class="efficiency-label">平均功率</text>
+        <text class="efficiency-value font-mono">{{record.avgPower ? record.avgPower + ' kW' : '--'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 里程 -->
+  <view class="form-group glass-card" wx:if="{{record.mileage || isEditMode}}">
+    <view class="form-label">
+      <text class="form-icon">🗺</text>
+      <text>里程</text>
+    </view>
+    <view wx:if="{{!isEditMode}}" class="view-field">
+      <view class="mileage-box">
+        <view class="mileage-item">
+          <text class="cost-label">充电完成时总里程</text>
+          <text class="font-mono" style="font-weight: 600;">{{record.mileage}} km</text>
+        </view>
+        <view class="mileage-item" wx:if="{{record.perHundredKwh}}">
+          <text class="cost-label">百公里电耗</text>
+          <text class="font-mono" style="font-weight: 600; color: #0891B2;">{{record.perHundredKwh}} kWh</text>
+        </view>
+      </view>
+    </view>
+    <view wx:else class="edit-field">
+      <input class="input-field" type="digit" value="{{editMileage}}" bindinput="onEditMileageInput" />
+    </view>
+  </view>
+
+  <!-- 备注 -->
+  <view class="form-group glass-card" wx:if="{{record.remark || isEditMode}}">
+    <view class="form-label">
+      <text class="form-icon">💬</text>
+      <text>备注</text>
+    </view>
+    <view wx:if="{{!isEditMode}}" class="view-field">
+      <text class="remark-text">{{record.remark}}</text>
+    </view>
+    <view wx:else class="edit-field">
+      <textarea class="textarea-field" value="{{editRemark}}" bindinput="onEditRemarkInput" />
+    </view>
+  </view>
+
+  <!-- 编辑/保存按钮 -->
+  <view class="action-area">
+    <button wx:if="{{!isEditMode}}" class="btn-edit" bindtap="enterEditMode">✏️ 编辑</button>
+    <view wx:else class="edit-actions">
+      <button class="btn-cancel" bindtap="exitEditMode">取消</button>
+      <button class="btn-save" bindtap="saveRecord">✓ 保存修改</button>
+    </view>
+  </view>
+
+  <!-- 删除 -->
+  <view class="delete-area" wx:if="{{!isEditMode}}">
+    <text class="delete-btn" bindtap="confirmDelete">🗑 删除记录</text>
+  </view>
+
+  <!-- 删除确认 -->
+  <delete-confirm
+    show="{{showDeleteModal}}"
+    message="删除后无法恢复，确定要删除这条充电记录吗？"
+    bind:confirm="onDeleteConfirm"
+    bind:cancel="onCancelDelete"
+  />
+</view>

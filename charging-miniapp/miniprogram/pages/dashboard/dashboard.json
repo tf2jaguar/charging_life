@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "glass-card": "/components/glass-card/glass-card",
+    "stat-card": "/components/stat-card/stat-card",
+    "calendar": "/components/calendar/calendar"
+  },
+  "navigationStyle": "custom"
+}

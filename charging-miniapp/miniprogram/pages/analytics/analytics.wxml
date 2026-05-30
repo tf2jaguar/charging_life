@@ -1,0 +1,137 @@
+<view class="page page-content">
+  <!-- 时间切换 -->
+  <view class="period-switch">
+    <view
+      class="period-btn {{period === 'month' ? 'period-active' : ''}}"
+      data-index="{{0}}" bindtap="onPeriodChange">本月</view>
+    <view
+      class="period-btn {{period === 'year' ? 'period-active' : ''}}"
+      data-index="{{1}}" bindtap="onPeriodChange">本年</view>
+  </view>
+
+  <!-- 核心指标 -->
+  <view class="core-stats glass-card" wx:if="{{coreStats}}">
+    <text class="card-title">核心指标</text>
+    <view class="core-grid">
+      <view class="core-item">
+        <text class="core-value font-mono" style="color: #0891B2;">{{coreStats.kwh.value}}</text>
+        <text class="core-label">总充电量(kWh)</text>
+      </view>
+      <view class="core-item core-item-border">
+        <text class="core-value font-mono" style="color: #22C55E;">¥{{coreStats.cost.value}}</text>
+        <text class="core-label">总费用</text>
+      </view>
+      <view class="core-item">
+        <text class="core-value font-mono" style="color: #D97706;">{{coreStats.count.value}}</text>
+        <text class="core-label">充电次数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 月度趋势 -->
+  <view class="trend-card glass-card" wx:if="{{trend.length}}">
+    <view class="card-header">
+      <text class="card-title">月度充电趋势</text>
+      <view class="legend-row">
+        <view class="legend-item">
+          <view class="legend-dot" style="background: linear-gradient(135deg, #DD847E, #E8A8A3);"></view>
+          <text class="legend-text">充电量</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot" style="background: linear-gradient(135deg, #A7D398, #C2E4B8);"></view>
+          <text class="legend-text">费用</text>
+        </view>
+      </view>
+    </view>
+    <view class="bar-chart">
+      <view wx:for="{{trend}}" wx:key="month" class="bar-group">
+        <view class="bar-pair">
+          <view class="bar bar-kwh" style="height: {{item.kwh > 0 ? (item.kwh / maxKwh * 100) : 0}}%"></view>
+          <view class="bar bar-cost" style="height: {{item.cost > 0 ? (item.cost / maxCost * 100) : 0}}%"></view>
+        </view>
+        <text class="bar-label">{{item.month}}月</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 充电时段分布 -->
+  <view class="glass-card" wx:if="{{timeDist.length}}">
+    <view class="card-title" style="padding: 32rpx 32rpx 0;">充电时段分布</view>
+    <view class="time-dist">
+      <view wx:for="{{timeDist}}" wx:key="label" class="time-slot">
+        <view class="time-bar-bg">
+          <view class="time-bar" style="height: {{item.pct}}%; background: linear-gradient(180deg, #5F8EC5, #8FB8DA);"></view>
+        </view>
+        <text class="time-label">{{item.label}}</text>
+        <text class="time-pct font-mono">{{item.pct}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 充电类型占比 -->
+  <view class="glass-card" wx:if="{{typeDist}}">
+    <view class="card-title" style="padding: 32rpx 32rpx 0;">充电类型占比</view>
+    <view class="type-dist">
+      <view class="pie-area">
+        <view class="pie-center">
+          <text class="pie-total font-mono">{{typeDist.total}}</text>
+          <text class="pie-label">总次数</text>
+        </view>
+      </view>
+      <view class="type-legend">
+        <view class="type-legend-item">
+          <view class="legend-dot" style="background: #164E63;"></view>
+          <text class="legend-text">超充</text>
+          <text class="font-mono legend-value">{{typeDist.super.count}}次</text>
+          <text class="legend-pct">{{typeDist.super.pct}}%</text>
+        </view>
+        <view class="type-legend-item">
+          <view class="legend-dot" style="background: #0891B2;"></view>
+          <text class="legend-text">快充</text>
+          <text class="font-mono legend-value">{{typeDist.fast.count}}次</text>
+          <text class="legend-pct">{{typeDist.fast.pct}}%</text>
+        </view>
+        <view class="type-legend-item">
+          <view class="legend-dot" style="background: #22C55E;"></view>
+          <text class="legend-text">慢充</text>
+          <text class="font-mono legend-value">{{typeDist.slow.count}}次</text>
+          <text class="legend-pct">{{typeDist.slow.pct}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 效率统计 -->
+  <view class="glass-card" wx:if="{{coreStats}}">
+    <view class="card-title" style="padding: 32rpx 32rpx 0;">效率统计</view>
+    <view class="efficiency-grid">
+      <view class="eff-box" style="background: rgba(8,145,178,0.05);">
+        <text class="eff-value font-mono" style="color: #0891B2;">¥{{coreStats.avgPrice.value}}</text>
+        <text class="eff-label">平均单价/kWh</text>
+      </view>
+      <view class="eff-box" style="background: rgba(34,197,94,0.05);">
+        <text class="eff-value font-mono" style="color: #22C55E;">{{coreStats.duration.value}}h</text>
+        <text class="eff-label">平均充电时长</text>
+      </view>
+      <view class="eff-box" style="background: rgba(245,158,11,0.05);">
+        <text class="eff-value font-mono" style="color: #D97706;">{{coreStats.kwh.value / (coreStats.count.value || 1)}}</text>
+        <text class="eff-label">平均充电量kWh</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 充电站排行 -->
+  <view class="glass-card" wx:if="{{topStations.length}}">
+    <view class="card-title" style="padding: 32rpx 32rpx 0;">常用充电站</view>
+    <view class="station-rank">
+      <view wx:for="{{topStations}}" wx:key="name" class="rank-item">
+        <view class="rank-badge rank-{{index + 1}}">{{index + 1}}</view>
+        <view class="rank-info">
+          <text class="rank-name">{{item.name}}</text>
+          <text class="rank-detail">充电{{item.count}}次 · {{item.kwh}} kWh</text>
+        </view>
+        <text class="rank-cost font-mono">¥{{item.cost}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,35 @@
+<view class="tab-bar">
+  <view class="tab-bar-inner">
+    <!-- 常规Tab项 -->
+    <view
+      wx:for="{{list}}"
+      wx:key="pagePath"
+      class="tab-item {{item.isCenter ? 'tab-item-center' : ''}} {{selected === index && !item.isCenter ? 'tab-item-active' : ''}}"
+      data-index="{{index}}"
+      bindtap="switchTab"
+    >
+      <!-- CTA中间按钮 -->
+      <block wx:if="{{item.isCenter}}">
+        <view class="center-btn">
+          <view class="center-btn-icon">
+            <image src="/assets/icons/plus.svg" mode="aspectFit" class="center-icon" />
+          </view>
+        </view>
+        <text class="tab-text {{selected === index ? 'tab-text-active' : ''}}">{{item.text}}</text>
+      </block>
+
+      <!-- 普通Tab -->
+      <block wx:else>
+        <view class="tab-icon-wrap">
+          <image
+            src="/assets/icons/{{item.icon}}{{selected === index ? '-active' : ''}}.svg"
+            mode="aspectFit"
+            class="tab-icon"
+          />
+        </view>
+        <text class="tab-text {{selected === index ? 'tab-text-active' : ''}}">{{item.text}}</text>
+      </block>
+    </view>
+  </view>
+  <view class="safe-bottom" style="height: env(safe-area-inset-bottom);"></view>
+</view>

@@ -1,0 +1,285 @@
+.page {
+  padding: 32rpx;
+  background: var(--app-bg, #ECFEFF);
+  min-height: 100vh;
+}
+
+.page-content {
+  padding-bottom: 200rpx;
+}
+
+.form-group {
+  margin-bottom: 32rpx;
+}
+
+.form-icon {
+  font-size: 28rpx;
+}
+
+/* 车辆信息 */
+.vehicle-info-box {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx;
+  background: rgba(8, 145, 178, 0.05);
+  border-radius: 16rpx;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.vehicle-name-text {
+  font-weight: 500;
+  font-size: 30rpx;
+}
+
+.vehicle-trim-text {
+  font-size: 26rpx;
+  color: #94A3B8;
+}
+
+/* 充电站 */
+.station-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.station-name {
+  font-weight: 600;
+  font-size: 30rpx;
+}
+
+/* 时间 */
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.time-range {
+  font-weight: 600;
+  font-size: 30rpx;
+  display: block;
+}
+
+.time-date {
+  font-size: 26rpx;
+  color: #94A3B8;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.duration-text {
+  font-weight: 600;
+  color: #0891B2;
+  font-size: 30rpx;
+  display: block;
+  text-align: right;
+}
+
+.duration-label {
+  font-size: 24rpx;
+  color: #94A3B8;
+  text-align: right;
+  display: block;
+}
+
+/* 费用 */
+.cost-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24rpx;
+}
+
+.cost-item {
+  text-align: center;
+  padding: 24rpx;
+  border-radius: 20rpx;
+}
+
+.cost-item-primary { background: rgba(8, 145, 178, 0.05); }
+.cost-item-amber { background: rgba(245, 158, 11, 0.05); }
+.cost-item-cta { background: rgba(34, 197, 94, 0.05); }
+
+.cost-label {
+  font-size: 22rpx;
+  color: #94A3B8;
+  display: block;
+}
+
+.cost-value {
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.cost-item-primary .cost-value { color: #0891B2; }
+.cost-item-amber .cost-value { color: #D97706; }
+.cost-item-cta .cost-value { color: #22C55E; }
+
+/* 效率 */
+.efficiency-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+}
+
+.efficiency-item {
+  padding: 24rpx;
+  background: rgba(8, 145, 178, 0.05);
+  border-radius: 20rpx;
+}
+
+.efficiency-label {
+  font-size: 22rpx;
+  color: #94A3B8;
+  display: block;
+}
+
+.efficiency-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* 里程 */
+.mileage-box {
+  display: flex;
+  justify-content: space-between;
+  padding: 24rpx;
+  background: rgba(8, 145, 178, 0.05);
+  border-radius: 20rpx;
+}
+
+.mileage-item {
+  text-align: left;
+}
+
+.remark-text {
+  font-size: 28rpx;
+  color: #64748B;
+  line-height: 1.6;
+}
+
+.textarea-field {
+  width: 100%;
+  padding: 24rpx;
+  background: #fff;
+  border: 2rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  color: var(--app-text, #164E63);
+  min-height: 180rpx;
+}
+
+/* 按钮 */
+.action-area {
+  margin-top: 48rpx;
+}
+
+.btn-edit {
+  width: 100%;
+  height: 96rpx;
+  background: #f1f5f9;
+  color: #0891B2;
+  font-size: 30rpx;
+  font-weight: 500;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.btn-edit::after { border: none; }
+
+.edit-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.btn-cancel {
+  flex: 1;
+  height: 96rpx;
+  background: #f1f5f9;
+  color: #64748B;
+  font-size: 30rpx;
+  font-weight: 500;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.btn-save {
+  flex: 2;
+  height: 96rpx;
+  background: #22C55E;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(34, 197, 94, 0.2);
+  border: none;
+}
+
+.btn-cancel::after,
+.btn-save::after { border: none; }
+
+.delete-area {
+  margin-top: 32rpx;
+  text-align: center;
+  padding-bottom: 64rpx;
+}
+
+.delete-btn {
+  color: #EF4444;
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 24rpx;
+}
+
+/* Slider */
+.slider-group {
+  margin-bottom: 32rpx;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.slider-label {
+  font-size: 28rpx;
+  color: #64748B;
+}
+
+.slider-value {
+  font-weight: 600;
+  font-size: 30rpx;
+}
+
+.edit-cost-row {
+  display: flex;
+  gap: 24rpx;
+}
+
+.edit-cost-field {
+  flex: 1;
+}
+
+.edit-cost-field .time-label {
+  font-size: 22rpx;
+  color: #94A3B8;
+  margin-bottom: 12rpx;
+  display: block;
+}

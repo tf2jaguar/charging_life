@@ -26,14 +26,21 @@ exports.main = async (event, context) => {
           updatedAt: db.serverDate(),
         },
       })
+    } else if (event.nickName || event.avatarUrl) {
+      const updateData = { updatedAt: db.serverDate() }
+      if (event.nickName) updateData.nickName = event.nickName
+      if (event.avatarUrl) updateData.avatarUrl = event.avatarUrl
+      await db.collection('users').doc(userRes.data[0]._id).update({ data: updateData })
     }
 
     const user = (await db.collection('users').where({ _openid: openid }).get()).data[0]
 
     let defaultVehicle = null
     if (user.defaultVehicleId) {
-      const vehicleRes = await db.collection('vehicles').doc(user.defaultVehicleId).get()
-      defaultVehicle = vehicleRes.data
+      try {
+        const vehicleRes = await db.collection('vehicles').doc(user.defaultVehicleId).get()
+        defaultVehicle = vehicleRes.data
+      } catch (e) { /* vehicle may be deleted */ }
     }
 
     return {

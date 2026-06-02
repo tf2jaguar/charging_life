@@ -36,7 +36,7 @@
     "swc": false,
     "disableSWC": true
   },
-  "appid": "wxb1309b60b116218e",
+  "appid": "wxf00632c8b3e1a55b",
   "projectname": "charging-life",
   "cloudfunctionTemplateRoot": "",
   "condition": {},
@@ -46,5 +46,6 @@
     "ignore": [],
     "include": []
   },
-  "editorSetting": {}
+  "editorSetting": {},
+  "libVersion": "3.16.1"
 }

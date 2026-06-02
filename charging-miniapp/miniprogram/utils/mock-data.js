@@ -269,7 +269,14 @@ const MOCK_RECORDS = [
   },
 ]
 
-// 本地存储 key
+// 当前登录用户的 openid
+let _currentOpenid = MOCK_OPENID
+
+// 本地存储 key（按用户隔离）
+function storageKey(base) {
+  return base + '_' + _currentOpenid
+}
+
 const STORAGE_KEYS = {
   vehicles: 'mock_vehicles',
   records: 'mock_records',
@@ -294,40 +301,44 @@ function setStore(key, val) {
   }
 }
 
+function setOpenid(openid) {
+  _currentOpenid = openid || MOCK_OPENID
+}
+
 function ensureInit() {
-  if (!getStore(STORAGE_KEYS.initialized, false)) {
-    setStore(STORAGE_KEYS.vehicles, MOCK_VEHICLES)
-    setStore(STORAGE_KEYS.records, MOCK_RECORDS)
-    setStore(STORAGE_KEYS.user, MOCK_USER)
-    setStore(STORAGE_KEYS.initialized, true)
+  if (!getStore(storageKey(STORAGE_KEYS.initialized), false)) {
+    setStore(storageKey(STORAGE_KEYS.vehicles), MOCK_VEHICLES)
+    setStore(storageKey(STORAGE_KEYS.records), MOCK_RECORDS)
+    setStore(storageKey(STORAGE_KEYS.user), MOCK_USER)
+    setStore(storageKey(STORAGE_KEYS.initialized), true)
   }
 }
 
 function getRecords() {
   ensureInit()
-  return getStore(STORAGE_KEYS.records, MOCK_RECORDS)
+  return getStore(storageKey(STORAGE_KEYS.records), MOCK_RECORDS)
 }
 
 function setRecords(records) {
-  setStore(STORAGE_KEYS.records, records)
+  setStore(storageKey(STORAGE_KEYS.records), records)
 }
 
 function getVehicles() {
   ensureInit()
-  return getStore(STORAGE_KEYS.vehicles, MOCK_VEHICLES)
+  return getStore(storageKey(STORAGE_KEYS.vehicles), MOCK_VEHICLES)
 }
 
 function setVehicles(vehicles) {
-  setStore(STORAGE_KEYS.vehicles, vehicles)
+  setStore(storageKey(STORAGE_KEYS.vehicles), vehicles)
 }
 
 function getUser() {
   ensureInit()
-  return getStore(STORAGE_KEYS.user, MOCK_USER)
+  return getStore(storageKey(STORAGE_KEYS.user), MOCK_USER)
 }
 
 function setUser(user) {
-  setStore(STORAGE_KEYS.user, user)
+  setStore(storageKey(STORAGE_KEYS.user), user)
 }
 
 // ============ 各云函数 action 模拟 ============
@@ -335,7 +346,7 @@ function setUser(user) {
 function mockLogin() {
   const user = getUser()
   return {
-    openid: MOCK_OPENID,
+    openid: _currentOpenid,
     userInfo: user,
   }
 }
@@ -423,14 +434,15 @@ function mockRecord(action, data) {
     }
     case 'create': {
       const records = getRecords()
-      const duration = data.startTime && data.endTime
-        ? Math.max(0, Math.round((new Date(data.endTime) - new Date(data.startTime)) / 60000))
-        : 0
+      const startMs = data.startTime ? new Date(data.startTime).getTime() : NaN
+      const endMs = data.endTime ? new Date(data.endTime).getTime() : NaN
+      const duration = (!isNaN(startMs) && !isNaN(endMs))
+        ? Math.max(0, Math.round((endMs - startMs) / 60000)) : 0
       const unitPrice = data.cost && data.chargeKwh && data.chargeKwh > 0
         ? Math.round((data.cost / data.chargeKwh) * 100) / 100 : 0
       const avgPower = data.chargeKwh && duration > 0
         ? Math.round((data.chargeKwh / (duration / 60)) * 10) / 10 : 0
-      const socDelta = data.endSOC !== undefined && data.startSOC !== undefined
+      const socDelta = (data.startSOC != null && data.endSOC != null && data.startSOC !== 0 && data.endSOC !== 0)
         ? data.endSOC - data.startSOC : 0
 
       const newRecord = {
@@ -441,8 +453,8 @@ function mockRecord(action, data) {
         chargeType: data.chargeType || 'fast',
         startTime: data.startTime ? new Date(data.startTime) : new Date(),
         endTime: data.endTime ? new Date(data.endTime) : new Date(),
-        startSOC: data.startSOC || 0,
-        endSOC: data.endSOC || 0,
+        startSOC: data.startSOC != null ? data.startSOC : 0,
+        endSOC: data.endSOC != null ? data.endSOC : 0,
         chargeKwh: data.chargeKwh || 0,
         cost: data.cost || 0,
         mileage: data.mileage || 0,
@@ -463,14 +475,16 @@ function mockRecord(action, data) {
       const records = getRecords()
       const idx = records.findIndex(function (r) { return r._id === data.recordId })
       if (idx >= 0) {
-        const duration = data.startTime && data.endTime
-          ? Math.max(0, Math.round((new Date(data.endTime) - new Date(data.startTime)) / 60000))
+        const startMs = data.startTime ? new Date(data.startTime).getTime() : NaN
+        const endMs = data.endTime ? new Date(data.endTime).getTime() : NaN
+        const duration = (!isNaN(startMs) && !isNaN(endMs))
+          ? Math.max(0, Math.round((endMs - startMs) / 60000))
           : records[idx].duration || 0
         const unitPrice = data.cost && data.chargeKwh && data.chargeKwh > 0
           ? Math.round((data.cost / data.chargeKwh) * 100) / 100 : records[idx].unitPrice || 0
         const avgPower = data.chargeKwh && duration > 0
           ? Math.round((data.chargeKwh / (duration / 60)) * 10) / 10 : records[idx].avgPower || 0
-        const socDelta = data.endSOC !== undefined && data.startSOC !== undefined
+        const socDelta = (data.startSOC != null && data.endSOC != null && data.startSOC !== 0 && data.endSOC !== 0)
           ? data.endSOC - data.startSOC : records[idx].socDelta || 0
 
         Object.assign(records[idx], data, {
@@ -708,6 +722,13 @@ var callMock = function (name, data) {
 
   switch (name) {
     case 'login':
+      if (data && data.nickName) {
+        setOpenid('mock_' + data.nickName)
+        var user = getUser()
+        user.nickName = data.nickName
+        if (data.avatarUrl) user.avatarUrl = data.avatarUrl
+        setUser(user)
+      }
       result = mockLogin()
       break
     case 'vehicle':
@@ -732,6 +753,7 @@ var callMock = function (name, data) {
 module.exports = {
   callMock: callMock,
   ensureInit: ensureInit,
+  setOpenid: setOpenid,
   // 暴露存储操作以便重置
   STORAGE_KEYS: STORAGE_KEYS,
   getRecords: getRecords,

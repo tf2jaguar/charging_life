@@ -48,11 +48,40 @@ Page({
 
       // 格式化概览数据
       if (overviewRes) {
-        overviewRes.costDisplay = toFixed(overviewRes.cost.value)
-        overviewRes.avgPriceDisplay = toFixed(overviewRes.avgPrice.value)
-        overviewRes.durationDisplay = overviewRes.duration.value ? toFixed(overviewRes.duration.value / 60, 1) : '0'
-        overviewRes.perHundredKwhDisplay = toFixed(overviewRes.perHundredKwh.value, 1)
-        overviewRes.perHundredCostDisplay = toFixed(overviewRes.perHundredCost.value)
+        const hasData = overviewRes.count && overviewRes.count.value > 0
+        overviewRes.costDisplay = hasData ? toFixed(overviewRes.cost.value) : '-'
+        overviewRes.avgPriceDisplay = hasData ? toFixed(overviewRes.avgPrice.value) : '-'
+        overviewRes.durationDisplay = hasData && overviewRes.duration.value ? toFixed(overviewRes.duration.value / 60, 1) : '-'
+        overviewRes.perHundredKwhDisplay = hasData ? toFixed(overviewRes.perHundredKwh.value, 1) : '-'
+        overviewRes.perHundredCostDisplay = hasData ? toFixed(overviewRes.perHundredCost.value) : '-'
+
+        // 预计算环比文本
+        function fmtChange(field, invertArrow) {
+          const v = field || {}
+          const val = v.value
+          const chg = v.change
+          const dir = v.direction
+          if (!val || val <= 0 || dir === 'same' || chg === undefined || chg === 0) return ''
+          const absChg = Math.abs(chg)
+          if (invertArrow) {
+            return dir === 'positive' ? '↓' + absChg + '%' : '↑' + absChg + '%'
+          }
+          return dir === 'positive' ? '↑' + absChg + '%' : '↓' + absChg + '%'
+        }
+        overviewRes.countChangeText = fmtChange(overviewRes.count)
+        overviewRes.countPositive = overviewRes.count && overviewRes.count.direction === 'positive'
+        overviewRes.kwhChangeText = fmtChange(overviewRes.kwh)
+        overviewRes.kwhPositive = overviewRes.kwh && overviewRes.kwh.direction === 'positive'
+        overviewRes.costChangeText = fmtChange(overviewRes.cost, true)
+        overviewRes.costPositive = overviewRes.cost && overviewRes.cost.direction === 'positive'
+        overviewRes.avgPriceChangeText = hasData ? fmtChange(overviewRes.avgPrice, true) : ''
+        overviewRes.avgPricePositive = overviewRes.avgPrice && overviewRes.avgPrice.direction === 'positive'
+        overviewRes.durationChangeText = fmtChange(overviewRes.duration)
+        overviewRes.durationPositive = overviewRes.duration && overviewRes.duration.direction === 'positive'
+        overviewRes.perHundredKwhChangeText = hasData ? fmtChange(overviewRes.perHundredKwh, true) : ''
+        overviewRes.perHundredKwhPositive = overviewRes.perHundredKwh && overviewRes.perHundredKwh.direction === 'negative'
+        overviewRes.perHundredCostChangeText = hasData ? fmtChange(overviewRes.perHundredCost, true) : ''
+        overviewRes.perHundredCostPositive = overviewRes.perHundredCost && overviewRes.perHundredCost.direction === 'negative'
       }
 
       const records = (recentRes || []).map(r => {
@@ -64,7 +93,27 @@ Page({
         defaultVehicle,
         lastChargeKwh,
         lastChargeTimeText,
-        overview: overviewRes,
+        overview: overviewRes || {
+          count: { value: 0, change: 0, direction: 'same' },
+          kwh: { value: 0, change: 0, direction: 'same' },
+          cost: { value: 0, change: 0, direction: 'same' },
+          avgPrice: { value: 0, change: 0, direction: 'same' },
+          duration: { value: 0, change: 0, direction: 'same' },
+          perHundredKwh: { value: 0, change: 0, direction: 'same' },
+          perHundredCost: { value: 0, change: 0, direction: 'same' },
+          costDisplay: '-',
+          avgPriceDisplay: '-',
+          durationDisplay: '-',
+          perHundredKwhDisplay: '-',
+          perHundredCostDisplay: '-',
+          countChangeText: '',
+          kwhChangeText: '',
+          costChangeText: '',
+          avgPriceChangeText: '',
+          durationChangeText: '',
+          perHundredKwhChangeText: '',
+          perHundredCostChangeText: '',
+        },
         recentRecords: records,
         calendarDays: calendarRes.days || [],
         calendarKwh: calendarRes.kwh || {},
@@ -103,6 +152,13 @@ Page({
   },
 
   goToAddRecord() {
+    if (!auth.isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      setTimeout(function () {
+        wx.switchTab({ url: '/pages/profile/profile' })
+      }, 1000)
+      return
+    }
     wx.navigateTo({ url: '/pages/add-record/add-record' })
   },
 

@@ -7,7 +7,11 @@ function calcDerived(data) {
   const derived = {}
 
   if (data.startTime && data.endTime) {
-    derived.duration = Math.max(0, Math.round((new Date(data.endTime) - new Date(data.startTime)) / 60000))
+    const startMs = new Date(data.startTime).getTime()
+    const endMs = new Date(data.endTime).getTime()
+    if (!isNaN(startMs) && !isNaN(endMs)) {
+      derived.duration = Math.max(0, Math.round((endMs - startMs) / 60000))
+    }
   }
 
   if (data.cost && data.chargeKwh && data.chargeKwh > 0) {
@@ -18,11 +22,11 @@ function calcDerived(data) {
     derived.avgPower = Math.round((data.chargeKwh / (derived.duration / 60)) * 10) / 10
   }
 
-  if (data.startSOC !== undefined && data.endSOC !== undefined) {
+  if (data.startSOC != null && data.endSOC != null && data.startSOC !== 0 && data.endSOC !== 0) {
     derived.socDelta = data.endSOC - data.startSOC
   }
 
-  if (data.batteryCapacity && data.startSOC !== undefined && data.endSOC !== undefined && data.chargeKwh > 0) {
+  if (data.batteryCapacity && data.startSOC != null && data.endSOC != null && data.startSOC !== 0 && data.endSOC !== 0 && data.chargeKwh > 0) {
     const socDelta = (data.endSOC - data.startSOC) / 100
     const expectedKwh = data.batteryCapacity * socDelta
     if (expectedKwh > 0) {

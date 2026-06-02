@@ -1,5 +1,6 @@
 const { callCloud } = require('../../utils/cloud')
 const { vehicleData } = require('../../utils/constants')
+const auth = require('../../utils/auth')
 
 Page({
   data: {
@@ -18,6 +19,13 @@ Page({
   },
 
   onLoad() {
+    if (!auth.isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      setTimeout(function () {
+        wx.switchTab({ url: '/pages/profile/profile' })
+      }, 1000)
+      return
+    }
     this.setData({
       brands: Object.keys(vehicleData),
     })

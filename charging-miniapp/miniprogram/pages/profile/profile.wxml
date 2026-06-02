@@ -10,7 +10,13 @@
       </view>
       <view class="user-info">
         <text class="user-name">{{nickName}}</text>
+        <text class="login-hint" wx:if="{{!isLoggedIn}}">点击登录获取专属数据</text>
       </view>
+      <button
+        wx:if="{{!isLoggedIn}}"
+        class="login-btn"
+        bindtap="onGetUserProfile"
+      >登录</button>
     </view>
 
     <!-- 统计卡 -->
@@ -68,10 +74,13 @@
         </view>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item">
+      <view class="menu-item" bindtap="onImportData">
         <view class="menu-left">
-          <view class="menu-icon menu-icon-primary">☁️</view>
-          <text class="menu-text">数据备份</text>
+          <view class="menu-icon menu-icon-primary">📥</view>
+          <view>
+            <text class="menu-text">数据导入</text>
+            <text class="menu-sub">从 JSON 文件导入充电记录和车辆</text>
+          </view>
         </view>
         <text class="menu-arrow">›</text>
       </view>
@@ -125,7 +134,7 @@
   </view>
 
   <!-- 退出 -->
-  <view class="logout-area">
+  <view class="logout-area" wx:if="{{isLoggedIn}}">
     <text class="logout-btn" bindtap="onLogout">退出登录</text>
   </view>
 </view>

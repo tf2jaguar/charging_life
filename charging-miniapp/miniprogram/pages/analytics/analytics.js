@@ -39,6 +39,8 @@ Page({
         typeDist,
         topStations,
         trend: trend || [],
+        maxKwh: Math.max(...(trend || []).map(m => m.kwh), 1),
+        maxCost: Math.max(...(trend || []).map(m => m.cost), 1),
         loading: false,
       })
     } catch (err) {

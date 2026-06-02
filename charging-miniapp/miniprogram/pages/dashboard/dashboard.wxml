@@ -62,62 +62,62 @@
   </view>
 
   <!-- 本月概览 -->
-  <view class="overview-section" wx:if="{{overview}}">
+  <view class="overview-section">
     <text class="section-title">本月概览</text>
     <view class="overview-grid">
       <stat-card
         icon="⚡" iconBg="rgba(8,145,178,0.1)" iconColor="#0891B2"
         label="充电次数"
-        value="{{overview.count.value}}"
+        value="{{overview.count.value || '-'}}"
         unit="次"
-        change="{{overview.count.direction === 'positive' ? '↑' + overview.count.change + '%' : overview.count.direction === 'negative' ? '↓' + Math.abs(overview.count.change) + '%' : ''}}"
-        changePositive="{{overview.count.direction === 'positive'}}"
+        change="{{overview.countChangeText}}"
+        changePositive="{{overview.countPositive}}"
       />
       <stat-card
         icon="✓" iconBg="rgba(34,197,94,0.1)" iconColor="#22C55E"
         label="充电量"
-        value="{{overview.kwh.value}}"
+        value="{{overview.kwh.value > 0 ? overview.kwh.value : '-'}}"
         unit="kWh"
-        change="{{overview.kwh.direction === 'positive' ? '↑' + overview.kwh.change + '%' : overview.kwh.direction === 'negative' ? '↓' + Math.abs(overview.kwh.change) + '%' : ''}}"
-        changePositive="{{overview.kwh.direction === 'positive'}}"
+        change="{{overview.kwhChangeText}}"
+        changePositive="{{overview.kwhPositive}}"
       />
       <stat-card
         icon="💰" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
         label="充电费用"
-        value="¥{{overview.costDisplay}}"
-        change="{{overview.cost.direction === 'negative' ? '↑' + Math.abs(overview.cost.change) + '%' : overview.cost.direction === 'positive' ? '↓' + overview.cost.change + '%' : ''}}"
-        changePositive="{{overview.cost.direction === 'positive'}}"
+        value="{{overview.costDisplay}}"
+        change="{{overview.costChangeText}}"
+        changePositive="{{overview.costPositive}}"
       />
       <stat-card
         icon="📈" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
         label="平均单价"
-        value="¥{{overview.avgPriceDisplay}}"
-        unit="/kWh"
-        change="{{overview.avgPrice.direction === 'positive' ? '↓' + Math.abs(overview.avgPrice.change) + '%' : ''}}"
-        changePositive="{{overview.avgPrice.direction === 'positive'}}"
+        value="{{overview.avgPriceDisplay === '-' ? '-' : '¥' + overview.avgPriceDisplay}}"
+        unit="{{overview.avgPriceDisplay === '-' ? '' : '/kWh'}}"
+        change="{{overview.avgPriceChangeText}}"
+        changePositive="{{overview.avgPricePositive}}"
       />
       <stat-card
         icon="⏱" iconBg="rgba(139,92,246,0.1)" iconColor="#8B5CF6"
         label="充电总时长"
         value="{{overview.durationDisplay}}"
-        unit="小时"
-        change="{{overview.duration.direction === 'positive' ? '↑' + overview.duration.change + '%' : overview.duration.direction === 'negative' ? '↓' + Math.abs(overview.duration.change) + '%' : ''}}"
-        changePositive="{{overview.duration.direction === 'positive'}}"
+        unit="{{overview.durationDisplay === '-' ? '' : '小时'}}"
+        change="{{overview.durationChangeText}}"
+        changePositive="{{overview.durationPositive}}"
       />
       <stat-card
         icon="🔋" iconBg="rgba(244,63,94,0.1)" iconColor="#F43F5E"
         label="百公里电耗"
         value="{{overview.perHundredKwhDisplay}}"
-        unit="kWh"
-        change="{{overview.perHundredKwh.direction === 'negative' ? '↓' + Math.abs(overview.perHundredKwh.change) + '%' : overview.perHundredKwh.direction === 'positive' ? '↑' + overview.perHundredKwh.change + '%' : ''}}"
-        changePositive="{{overview.perHundredKwh.direction === 'negative'}}"
+        unit="{{overview.perHundredKwhDisplay === '-' ? '' : 'kWh'}}"
+        change="{{overview.perHundredKwhChangeText}}"
+        changePositive="{{overview.perHundredKwhPositive}}"
       />
       <stat-card
         icon="🗺" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
         label="百公里成本"
-        value="¥{{overview.perHundredCostDisplay}}"
-        change="{{overview.perHundredCost.direction === 'negative' ? '↓' + Math.abs(overview.perHundredCost.change) + '%' : overview.perHundredCost.direction === 'positive' ? '↑' + overview.perHundredCost.change + '%' : ''}}"
-        changePositive="{{overview.perHundredCost.direction === 'negative'}}"
+        value="{{overview.perHundredCostDisplay === '-' ? '-' : '¥' + overview.perHundredCostDisplay}}"
+        change="{{overview.perHundredCostChangeText}}"
+        changePositive="{{overview.perHundredCostPositive}}"
         fullSpan="{{true}}"
       />
     </view>

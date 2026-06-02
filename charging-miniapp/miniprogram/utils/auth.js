@@ -3,6 +3,7 @@ const { IS_OSIM } = require('./env')
 
 let _userInfo = null
 let _openid = null
+let _explicitLogin = false
 
 const getUserInfo = function () {
   return _userInfo
@@ -17,7 +18,8 @@ const login = function () {
     // osim 环境直接返回 mock 数据，不调用云函数
     var mockResult = require('./mock-data')
     var user = mockResult.getUser()
-    _openid = 'mock_openid_001'
+    _openid = mockResult.setOpenid ? user._openid : 'mock_openid_001'
+    mockResult.setOpenid && mockResult.setOpenid(_openid)
     _userInfo = user
     var app = getApp()
     if (app) {
@@ -49,9 +51,40 @@ const ensureLogin = function () {
   return login()
 }
 
+const isLoggedIn = function () {
+  return _explicitLogin
+}
+
+const logout = function () {
+  _userInfo = null
+  _openid = null
+  _explicitLogin = false
+  var app = getApp()
+  if (app) {
+    app.globalData.userInfo = null
+    app.globalData.openid = null
+  }
+}
+
+const updateUserInfo = function (info) {
+  if (_userInfo) {
+    Object.assign(_userInfo, info)
+  } else {
+    _userInfo = info
+  }
+  _explicitLogin = true
+  var app = getApp()
+  if (app) {
+    app.globalData.userInfo = _userInfo
+  }
+}
+
 module.exports = {
   getUserInfo: getUserInfo,
   getOpenId: getOpenId,
   login: login,
   ensureLogin: ensureLogin,
+  isLoggedIn: isLoggedIn,
+  logout: logout,
+  updateUserInfo: updateUserInfo,
 }

@@ -13,7 +13,6 @@
       <text class="record-time">{{record.timeText}}</text>
     </view>
     <view class="record-cost">
-      <text class="record-kwh font-mono">{{record.chargeKwh}} kWh</text>
       <text class="record-fee font-mono">¥{{record.cost}}</text>
     </view>
   </view>
@@ -27,8 +26,8 @@
       <text class="detail-value font-mono">{{record.startSOC}}% → {{record.endSOC}}%</text>
     </view>
     <view class="detail-item detail-item-right">
-      <text class="detail-label">费用</text>
-      <text class="detail-value font-mono fee-value">¥{{record.cost}}</text>
+      <text class="detail-label">平均价格</text>
+      <text class="detail-value detail-value-price font-mono">{{record.unitPrice ? record.unitPrice + ' 元/度' : '--'}}</text>
     </view>
   </view>
   <view class="record-efficiency">

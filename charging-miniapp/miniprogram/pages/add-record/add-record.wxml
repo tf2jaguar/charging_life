@@ -5,6 +5,7 @@
       <view class="form-label">
         <text class="form-icon">🚗</text>
         <text>选择车辆</text>
+        <text class="optional-tag">选填</text>
       </view>
       <picker range="{{vehicles}}" range-key="displayName" value="{{vehicleIndex}}" bindchange="onVehicleChange">
         <view class="input-field picker-field">
@@ -19,6 +20,7 @@
       <view class="form-label">
         <text class="form-icon">📍</text>
         <text>充电站名称</text>
+        <text class="optional-tag">选填</text>
       </view>
       <input class="input-field" placeholder="输入或选择充电站" value="{{stationName}}" bindinput="onStationInput" />
       <view class="form-label" style="margin-top: 32rpx;">
@@ -31,20 +33,43 @@
     <!-- 充电时间 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">🕐</text>
+        <text class="form-icon">📅</text>
         <text>充电时间</text>
+        <text class="required-tag">必填</text>
       </view>
       <view class="time-row">
         <view class="time-field">
-          <text class="time-label">开始时间</text>
-          <picker mode="date" value="{{startTime}}" bindchange="onStartTimeChange">
-            <view class="input-field">{{startTime || '选择时间'}}</view>
+          <text class="time-label">开始</text>
+          <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+            <view class="input-field picker-field">
+              <text>{{startDate || '选择日期'}}</text>
+            </view>
           </picker>
         </view>
         <view class="time-field">
-          <text class="time-label">结束时间</text>
-          <picker mode="date" value="{{endTime}}" bindchange="onEndTimeChange">
-            <view class="input-field">{{endTime || '选择时间'}}</view>
+          <text class="time-label">&nbsp;</text>
+          <picker mode="time" value="{{startTime}}" bindchange="onStartTimeChange">
+            <view class="input-field picker-field">
+              <text>{{startTime || '选择时间'}}</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class="time-row" style="margin-top: 16rpx;">
+        <view class="time-field">
+          <text class="time-label">结束</text>
+          <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+            <view class="input-field picker-field">
+              <text>{{endDate || '选择日期'}}</text>
+            </view>
+          </picker>
+        </view>
+        <view class="time-field">
+          <text class="time-label">&nbsp;</text>
+          <picker mode="time" value="{{endTime}}" bindchange="onEndTimeChange">
+            <view class="input-field picker-field">
+              <text>{{endTime || '选择时间'}}</text>
+            </view>
           </picker>
         </view>
       </view>
@@ -58,6 +83,7 @@
       <view class="form-label">
         <text class="form-icon">📊</text>
         <text>充电量与费用</text>
+        <text class="required-tag">必填</text>
       </view>
       <view class="time-row">
         <view class="time-field">
@@ -86,23 +112,26 @@
       <view class="form-label">
         <text class="form-icon">🔋</text>
         <text>电量信息</text>
+        <text class="optional-tag">选填</text>
       </view>
-      <view class="slider-group">
-        <view class="slider-header">
-          <text class="slider-label">起始电量</text>
-          <text class="slider-value font-mono">{{startSOC}}%</text>
+      <view class="time-row">
+        <view class="time-field">
+          <text class="time-label">起始电量</text>
+          <view class="input-with-suffix">
+            <input class="input-field" type="number" placeholder="0" value="{{startSOC}}" bindinput="onStartSOCInput" />
+            <text class="input-suffix">%</text>
+          </view>
         </view>
-        <slider min="0" max="100" value="{{startSOC}}" activeColor="#0891B2" bindchange="onStartSOCChange" />
-      </view>
-      <view class="slider-group">
-        <view class="slider-header">
-          <text class="slider-label">结束电量</text>
-          <text class="slider-value font-mono" style="color: #22C55E;">{{endSOC}}%</text>
+        <view class="time-field">
+          <text class="time-label">结束电量</text>
+          <view class="input-with-suffix">
+            <input class="input-field" type="number" placeholder="0" value="{{endSOC}}" bindinput="onEndSOCInput" />
+            <text class="input-suffix">%</text>
+          </view>
         </view>
-        <slider min="0" max="100" value="{{endSOC}}" activeColor="#22C55E" bindchange="onEndSOCChange" />
       </view>
       <view class="computed-box computed-box-green">
-        <text class="computed-text">电量提升: <text class="font-mono" style="color: #22C55E; font-weight: 600;">+{{socDelta}}%</text></text>
+        <text class="computed-text">电量提升: <text class="font-mono" style="color: #22C55E; font-weight: 600;">{{socDeltaText}}</text></text>
       </view>
     </view>
 
@@ -111,12 +140,12 @@
       <view class="form-label">
         <text class="form-icon">🗺</text>
         <text>充电完成时仪表盘总里程</text>
+        <text class="optional-tag">选填</text>
       </view>
       <view class="input-with-suffix">
         <input class="input-field" type="digit" placeholder="输入充电完成时的总里程" value="{{mileage}}" bindinput="onMileageInput" />
         <text class="input-suffix">km</text>
       </view>
-      <text class="hint-text">用于计算百公里电耗和成本</text>
     </view>
 
     <!-- 备注 -->
@@ -124,6 +153,7 @@
       <view class="form-label">
         <text class="form-icon">💬</text>
         <text>备注</text>
+        <text class="optional-tag">选填</text>
       </view>
       <textarea class="textarea-field" placeholder="添加备注信息..." value="{{remark}}" bindinput="onRemarkInput" />
     </view>

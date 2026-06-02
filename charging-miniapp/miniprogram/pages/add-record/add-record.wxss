@@ -15,6 +15,24 @@
   font-size: 28rpx;
 }
 
+.required-tag {
+  font-size: 20rpx;
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.08);
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  margin-left: 8rpx;
+}
+
+.optional-tag {
+  font-size: 20rpx;
+  color: #94A3B8;
+  background: rgba(148, 163, 184, 0.08);
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  margin-left: 8rpx;
+}
+
 .time-row {
   display: flex;
   gap: 24rpx;
@@ -105,28 +123,6 @@
   padding-left: 48rpx !important;
 }
 
-.slider-group {
-  margin-bottom: 32rpx;
-}
-
-.slider-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-}
-
-.slider-label {
-  font-size: 28rpx;
-  color: #64748B;
-}
-
-.slider-value {
-  font-weight: 600;
-  color: #0891B2;
-  font-size: 30rpx;
-}
-
 .textarea-field {
   width: 100%;
   padding: 24rpx;
@@ -136,13 +132,6 @@
   font-size: 28rpx;
   color: var(--app-text, #164E63);
   min-height: 180rpx;
-}
-
-.hint-text {
-  font-size: 22rpx;
-  color: #cbd5e1;
-  margin-top: 16rpx;
-  display: block;
 }
 
 .submit-area {

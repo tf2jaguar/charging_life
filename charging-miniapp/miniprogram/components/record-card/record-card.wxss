@@ -15,7 +15,7 @@
 
 .record-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 24rpx;
 }
 
@@ -69,18 +69,13 @@
 .record-cost {
   text-align: right;
   flex-shrink: 0;
-}
-
-.record-kwh {
-  font-weight: 600;
-  font-size: 30rpx;
-  color: var(--app-text, #164E63);
-  display: block;
+  margin-top: -16rpx;
 }
 
 .record-fee {
-  font-size: 24rpx;
-  color: #94A3B8;
+  font-weight: 700;
+  font-size: 36rpx;
+  color: #D97706;
 }
 
 .record-detail-row {
@@ -113,6 +108,11 @@
 
 .fee-value {
   color: #D97706;
+}
+
+.detail-value-price {
+  font-size: 24rpx;
+  color: var(--app-text, #164E63);
 }
 
 .record-efficiency {

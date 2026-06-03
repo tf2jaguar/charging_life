@@ -5,17 +5,38 @@ const auth = require('../../utils/auth')
 Page({
   data: {
     greeting: '',
-    nickName: '充电达人',
+    nickName: '未登录',
     defaultVehicle: null,
     lastChargeKwh: '',
     lastChargeTimeText: '',
-    overview: null,
+    overview: {
+      count: { value: 0, change: 0, direction: 'same' },
+      kwh: { value: 0, change: 0, direction: 'same' },
+      cost: { value: 0, change: 0, direction: 'same' },
+      avgPrice: { value: 0, change: 0, direction: 'same' },
+      duration: { value: 0, change: 0, direction: 'same' },
+      perHundredKwh: { value: 0, change: 0, direction: 'same' },
+      perHundredCost: { value: 0, change: 0, direction: 'same' },
+      costDisplay: '-',
+      avgPriceDisplay: '-',
+      durationDisplay: '-',
+      perHundredKwhDisplay: '-',
+      perHundredCostDisplay: '-',
+      countChangeText: '',
+      kwhChangeText: '',
+      costChangeText: '',
+      avgPriceChangeText: '',
+      durationChangeText: '',
+      perHundredKwhChangeText: '',
+      perHundredCostChangeText: '',
+    },
     recentRecords: [],
     calendarDays: [],
     calendarKwh: {},
     calendarCount: 0,
     calendarTotalKwh: 0,
     loading: true,
+    statusBarHeight: 0,
   },
 
   onShow() {
@@ -25,13 +46,56 @@ Page({
     this.loadData()
   },
 
+  onLoad() {
+    const sysInfo = wx.getSystemInfoSync()
+    this.setData({ statusBarHeight: sysInfo.statusBarHeight })
+  },
+
   async loadData() {
     this.setData({ loading: true, greeting: getGreeting() })
+
+    if (!auth.isLoggedIn()) {
+      this.setData({
+        loading: false,
+        nickName: '未登录',
+        defaultVehicle: null,
+        lastChargeKwh: '',
+        lastChargeTimeText: '',
+        overview: {
+          count: { value: 0, change: 0, direction: 'same' },
+          kwh: { value: 0, change: 0, direction: 'same' },
+          cost: { value: 0, change: 0, direction: 'same' },
+          avgPrice: { value: 0, change: 0, direction: 'same' },
+          duration: { value: 0, change: 0, direction: 'same' },
+          perHundredKwh: { value: 0, change: 0, direction: 'same' },
+          perHundredCost: { value: 0, change: 0, direction: 'same' },
+          costDisplay: '-',
+          avgPriceDisplay: '-',
+          durationDisplay: '-',
+          perHundredKwhDisplay: '-',
+          perHundredCostDisplay: '-',
+          countChangeText: '',
+          kwhChangeText: '',
+          costChangeText: '',
+          avgPriceChangeText: '',
+          durationChangeText: '',
+          perHundredKwhChangeText: '',
+          perHundredCostChangeText: '',
+        },
+        recentRecords: [],
+        calendarDays: [],
+        calendarKwh: {},
+        calendarCount: 0,
+        calendarTotalKwh: 0,
+      })
+      return
+    }
+
     try {
       await auth.ensureLogin()
       const userInfo = auth.getUserInfo()
-      if (userInfo) {
-        this.setData({ nickName: userInfo.nickName || '充电达人' })
+      if (userInfo && userInfo.nickName) {
+        this.setData({ nickName: userInfo.nickName })
       }
 
       const [vehicles, overviewRes, recentRes, calendarRes] = await Promise.all([

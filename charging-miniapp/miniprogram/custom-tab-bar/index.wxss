@@ -78,7 +78,6 @@
 .center-icon {
   width: 48rpx;
   height: 48rpx;
-  filter: brightness(0) invert(1);
 }
 
 .safe-bottom {

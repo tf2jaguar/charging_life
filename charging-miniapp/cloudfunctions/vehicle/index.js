@@ -6,6 +6,7 @@ exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
   const { action, data } = event
+  console.info('[vehicle] openid=%s, action=%s', openid, action)
 
   try {
     switch (action) {
@@ -43,6 +44,10 @@ exports.main = async (event, context) => {
 
       case 'update': {
         if (!data.vehicleId) return { code: -1, msg: '缺少vehicleId' }
+        const vRes = await db.collection('vehicles').doc(data.vehicleId).get()
+        if (vRes.data._openid !== openid) {
+          return { code: -1, msg: '无权修改' }
+        }
         if (data.isDefault) {
           await db.collection('vehicles')
             .where({ _openid: openid, isDefault: true })

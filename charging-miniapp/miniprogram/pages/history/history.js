@@ -1,5 +1,6 @@
 const { callCloud } = require('../../utils/cloud')
 const { formatRelativeDate, formatDate, formatDuration, toFixed } = require('../../utils/util')
+const auth = require('../../utils/auth')
 
 Page({
   data: {
@@ -20,6 +21,11 @@ Page({
       this.getTabBar().setData({ selected: 1 })
     }
     this.setData({ page: 1, records: [], hasMore: true })
+
+    if (!auth.isLoggedIn()) {
+      this.setData({ loading: false })
+      return
+    }
     this.loadRecords()
   },
 

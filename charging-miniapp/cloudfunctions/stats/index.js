@@ -35,6 +35,7 @@ exports.main = async (event, context) => {
   const openid = wxContext.OPENID
   const { action, period, year, month } = event
   const periodVal = period || 'month'
+  console.info('[stats] openid=%s, action=%s, period=%s', openid, action, periodVal)
 
   try {
     switch (action) {

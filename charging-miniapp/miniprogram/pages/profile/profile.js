@@ -6,16 +6,21 @@ Page({
   data: {
     userInfo: null,
     isLoggedIn: false,
-    nickName: '充电达人',
+    nickName: '',
     vehicles: [],
-    totalKwh: 0,
-    totalCost: 0,
-    totalDays: 0,
+    totalKwh: '-',
+    totalCost: '-',
+    totalDays: '-',
     settings: {
       notification: true,
       budgetLimit: 800,
       theme: 'light',
     },
+    // 登录流程
+    loginStep: 0, // 0=未开始, 1=填昵称, 2=选头像
+    tempNickName: '',
+    tempAvatarUrl: '',
+    statusBarHeight: 0,
   },
 
   onShow() {
@@ -23,6 +28,11 @@ Page({
       this.getTabBar().setData({ selected: 4 })
     }
     this.loadData()
+  },
+
+  onLoad() {
+    const sysInfo = wx.getSystemInfoSync()
+    this.setData({ statusBarHeight: sysInfo.statusBarHeight })
   },
 
   async loadData() {
@@ -40,7 +50,8 @@ Page({
         this.setData({
           userInfo,
           isLoggedIn: true,
-          nickName: userInfo ? userInfo.nickName || '充电达人' : '充电达人',
+          loginStep: 0,
+          nickName: userInfo ? userInfo.nickName || '' : '',
           vehicles: vehicles || [],
           totalKwh: statsRes && statsRes.kwh ? toFixed(statsRes.kwh.value, 1) : '-',
           totalCost: statsRes && statsRes.cost ? '¥' + toFixed(statsRes.cost.value) : '-',
@@ -51,7 +62,8 @@ Page({
         this.setData({
           userInfo: null,
           isLoggedIn: false,
-          nickName: '未登录',
+          loginStep: 0,
+          nickName: '',
           vehicles: [],
           totalKwh: '-',
           totalCost: '-',
@@ -63,16 +75,44 @@ Page({
     }
   },
 
-  async onGetUserProfile() {
+  // 分步登录：开始登录 → 进入昵称输入
+  onStartLogin() {
+    this.setData({ loginStep: 1, tempNickName: '', tempAvatarUrl: '' })
+  },
+
+  // 昵称输入
+  onNickNameInput(e) {
+    this.setData({ tempNickName: e.detail.value })
+  },
+
+  // 昵称确认 → 进入头像选择
+  onNickNameConfirm() {
+    if (!this.data.tempNickName.trim()) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
+      return
+    }
+    this.setData({ loginStep: 2 })
+  },
+
+  // 选择头像 → 完成登录
+  onChooseAvatar(e) {
+    const avatarUrl = e.detail.avatarUrl || ''
+    this.setData({ tempAvatarUrl: avatarUrl })
+    this.onLogin()
+  },
+
+  // 跳过头像 → 完成登录
+  onSkipAvatar() {
+    this.onLogin()
+  },
+
+  // 执行登录
+  async onLogin() {
+    const nickName = this.data.tempNickName.trim()
+    const avatarUrl = this.data.tempAvatarUrl
+
     try {
-      const { userInfo: wxUserInfo } = await wx.getUserProfile({
-        desc: '用于完善个人资料',
-      })
-
       await auth.ensureLogin()
-
-      const nickName = wxUserInfo.nickName || '充电达人'
-      const avatarUrl = wxUserInfo.avatarUrl || ''
 
       auth.updateUserInfo({ nickName: nickName, avatarUrl: avatarUrl })
 
@@ -84,6 +124,7 @@ Page({
       this.setData({
         userInfo: { nickName, avatarUrl },
         isLoggedIn: true,
+        loginStep: 0,
         nickName: nickName,
       })
 
@@ -91,16 +132,13 @@ Page({
       this.loadData()
     } catch (err) {
       console.error('login error', err)
-      if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-        wx.showToast({ title: '登录失败', icon: 'none' })
-      }
+      wx.showToast({ title: '登录失败', icon: 'none' })
     }
   },
 
   goToAddCar() {
     if (!auth.isLoggedIn()) {
       wx.showToast({ title: '请先登录', icon: 'none' })
-      wx.switchTab({ url: '/pages/profile/profile' })
       return
     }
     wx.navigateTo({ url: '/pages/add-car/add-car' })
@@ -215,7 +253,16 @@ Page({
       success: (res) => {
         if (res.confirm) {
           auth.logout()
-          wx.reLaunch({ url: '/pages/dashboard/dashboard' })
+          this.setData({
+            isLoggedIn: false,
+            loginStep: 0,
+            nickName: '',
+            userInfo: null,
+            vehicles: [],
+            totalKwh: '-',
+            totalCost: '-',
+            totalDays: '-',
+          })
         }
       },
     })

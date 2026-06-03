@@ -1,10 +1,6 @@
-const { IS_OSIM } = require('./env')
-const { callMock } = require('./mock-data')
-
 const callCloud = function (name, data) {
-  if (IS_OSIM) {
-    return callMock(name, data)
-  }
+  var action = data && data.action
+  console.info('[callCloud] name=%s, action=%s', name, action || '')
   return wx.cloud.callFunction({
     name: name,
     data: data,

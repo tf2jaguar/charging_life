@@ -1,5 +1,4 @@
 const { callCloud } = require('./cloud')
-const { IS_OSIM } = require('./env')
 
 let _userInfo = null
 let _openid = null
@@ -14,20 +13,6 @@ const getOpenId = function () {
 }
 
 const login = function () {
-  if (IS_OSIM) {
-    // osim 环境直接返回 mock 数据，不调用云函数
-    var mockResult = require('./mock-data')
-    var user = mockResult.getUser()
-    _openid = mockResult.setOpenid ? user._openid : 'mock_openid_001'
-    mockResult.setOpenid && mockResult.setOpenid(_openid)
-    _userInfo = user
-    var app = getApp()
-    if (app) {
-      app.globalData.userInfo = _userInfo
-      app.globalData.openid = _openid
-    }
-    return Promise.resolve({ openid: _openid, userInfo: _userInfo })
-  }
   return wx.cloud.callFunction({
     name: 'login',
     data: {},
@@ -35,7 +20,7 @@ const login = function () {
     if (res.result) {
       _openid = res.result.openid
       _userInfo = res.result.userInfo || null
-      const app = getApp()
+      var app = getApp()
       if (app) {
         app.globalData.userInfo = _userInfo
         app.globalData.openid = _openid
@@ -52,6 +37,10 @@ const ensureLogin = function () {
 }
 
 const isLoggedIn = function () {
+  return _explicitLogin
+}
+
+const requireLogin = function () {
   return _explicitLogin
 }
 
@@ -85,6 +74,7 @@ module.exports = {
   login: login,
   ensureLogin: ensureLogin,
   isLoggedIn: isLoggedIn,
+  requireLogin: requireLogin,
   logout: logout,
   updateUserInfo: updateUserInfo,
 }

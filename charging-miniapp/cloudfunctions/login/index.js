@@ -5,6 +5,7 @@ const db = cloud.database()
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
+  console.info('[login] openid=%s, nickName=%s, avatarUrl=%s', openid, event.nickName || '', event.avatarUrl || '')
 
   try {
     const userRes = await db.collection('users').where({ _openid: openid }).get()

@@ -1,5 +1,6 @@
 const { callCloud } = require('../../utils/cloud')
 const { formatDate, formatDuration, toFixed } = require('../../utils/util')
+const auth = require('../../utils/auth')
 
 Page({
   data: {
@@ -58,6 +59,13 @@ Page({
   },
 
   enterEditMode() {
+    if (!auth.isLoggedIn()) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      setTimeout(function () {
+        wx.switchTab({ url: '/pages/profile/profile' })
+      }, 1000)
+      return
+    }
     this.setData({ isEditMode: true })
   },
 

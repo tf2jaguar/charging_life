@@ -42,6 +42,7 @@ exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
   const { action, data } = event
+  console.info('[record] openid=%s, action=%s', openid, action)
 
   try {
     switch (action) {
@@ -69,6 +70,10 @@ exports.main = async (event, context) => {
 
       case 'update': {
         if (!data.recordId) return { code: -1, msg: '缺少recordId' }
+        const recordRes = await db.collection('records').doc(data.recordId).get()
+        if (recordRes.data._openid !== openid) {
+          return { code: -1, msg: '无权修改' }
+        }
         const derived = calcDerived(data)
         const updateData = { ...data, ...derived }
         delete updateData.recordId
@@ -123,7 +128,11 @@ exports.main = async (event, context) => {
 
       case 'detail': {
         if (!data.recordId) return { code: -1, msg: '缺少recordId' }
-        const record = (await db.collection('records').doc(data.recordId).get()).data
+        const recordRes = await db.collection('records').doc(data.recordId).get()
+        if (recordRes.data._openid !== openid) {
+          return { code: -1, msg: '无权查看' }
+        }
+        const record = recordRes.data
         if (record.vehicleId) {
           try {
             const vehicle = (await db.collection('vehicles').doc(record.vehicleId).get()).data

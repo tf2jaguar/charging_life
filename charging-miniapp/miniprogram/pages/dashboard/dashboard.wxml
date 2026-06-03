@@ -41,21 +41,23 @@
 
   <!-- 快捷入口 -->
   <view class="quick-entry glass-card">
-    <view class="entry-grid">
+    <view class="entry-grid entry-grid-center">
       <view class="entry-item" bindtap="goToAddRecord">
-        <view class="entry-icon entry-icon-cta">+</view>
+        <view class="entry-icon entry-icon-cta">
+          <image class="entry-icon-img" src="/assets/icons/plus-green.svg" mode="aspectFit" />
+        </view>
         <text class="entry-text">新增记录</text>
       </view>
       <view class="entry-item">
-        <view class="entry-icon entry-icon-primary">⌗</view>
-        <text class="entry-text">扫码充电</text>
-      </view>
-      <view class="entry-item">
-        <view class="entry-icon entry-icon-amber">📍</view>
+        <view class="entry-icon entry-icon-amber">
+          <image class="entry-icon-img" src="/assets/icons/map.svg" mode="aspectFit" />
+        </view>
         <text class="entry-text">附近电站</text>
       </view>
       <view class="entry-item" bindtap="goToAnalytics">
-        <view class="entry-icon entry-icon-violet">📊</view>
+        <view class="entry-icon entry-icon-violet">
+          <image class="entry-icon-img" src="/assets/icons/chart-puper.svg" mode="aspectFit" />
+        </view>
         <text class="entry-text">统计分析</text>
       </view>
     </view>
@@ -81,21 +83,7 @@
         change="{{overview.kwhChangeText}}"
         changePositive="{{overview.kwhPositive}}"
       />
-      <stat-card
-        icon="💰" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
-        label="充电费用"
-        value="{{overview.costDisplay}}"
-        change="{{overview.costChangeText}}"
-        changePositive="{{overview.costPositive}}"
-      />
-      <stat-card
-        icon="📈" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
-        label="平均单价"
-        value="{{overview.avgPriceDisplay === '-' ? '-' : '¥' + overview.avgPriceDisplay}}"
-        unit="{{overview.avgPriceDisplay === '-' ? '' : '/kWh'}}"
-        change="{{overview.avgPriceChangeText}}"
-        changePositive="{{overview.avgPricePositive}}"
-      />
+
       <stat-card
         icon="⏱" iconBg="rgba(139,92,246,0.1)" iconColor="#8B5CF6"
         label="充电总时长"
@@ -103,6 +91,22 @@
         unit="{{overview.durationDisplay === '-' ? '' : '小时'}}"
         change="{{overview.durationChangeText}}"
         changePositive="{{overview.durationPositive}}"
+      />
+      <stat-card
+        icon="💰" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
+        label="充电费用"
+        value="{{overview.costDisplay}}"
+        change="{{overview.costChangeText}}"
+        changePositive="{{overview.costPositive}}"
+      />
+      
+      <stat-card
+        icon="📈" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
+        label="平均单价"
+        value="{{overview.avgPriceDisplay === '-' ? '-' : '¥' + overview.avgPriceDisplay}}"
+        unit="{{overview.avgPriceDisplay === '-' ? '' : '/kWh'}}"
+        change="{{overview.avgPriceChangeText}}"
+        changePositive="{{overview.avgPricePositive}}"
       />
       <stat-card
         icon="🔋" iconBg="rgba(244,63,94,0.1)" iconColor="#F43F5E"
@@ -113,7 +117,7 @@
         changePositive="{{overview.perHundredKwhPositive}}"
       />
       <stat-card
-        icon="🗺" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
+        icon="💰" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
         label="百公里成本"
         value="{{overview.perHundredCostDisplay === '-' ? '-' : '¥' + overview.perHundredCostDisplay}}"
         change="{{overview.perHundredCostChangeText}}"

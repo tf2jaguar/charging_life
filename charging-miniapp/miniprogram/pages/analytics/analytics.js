@@ -1,5 +1,6 @@
 const { callCloud } = require('../../utils/cloud')
 const { toFixed } = require('../../utils/util')
+const auth = require('../../utils/auth')
 
 Page({
   data: {
@@ -17,6 +18,11 @@ Page({
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 })
+    }
+
+    if (!auth.isLoggedIn()) {
+      this.setData({ loading: false })
+      return
     }
     this.loadAll()
   },

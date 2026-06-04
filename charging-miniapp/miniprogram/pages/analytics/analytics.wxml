@@ -1,4 +1,4 @@
-<view class="page page-content">
+<view class="page">
   <!-- 时间切换 -->
   <view class="period-switch">
     <view
@@ -14,11 +14,11 @@
     <text class="card-title">核心指标</text>
     <view class="core-grid">
       <view class="core-item">
-        <text class="core-value font-mono" style="color: #0891B2;">{{coreStats.kwh.value}}</text>
+        <text class="core-value font-mono" style="color: #0891B2;">{{coreStats.kwhDisplay}}</text>
         <text class="core-label">总充电量(kWh)</text>
       </view>
       <view class="core-item core-item-border">
-        <text class="core-value font-mono" style="color: #22C55E;">¥{{coreStats.cost.value}}</text>
+        <text class="core-value font-mono" style="color: #22C55E;">¥{{coreStats.costDisplay}}</text>
         <text class="core-label">总费用</text>
       </view>
       <view class="core-item">
@@ -106,15 +106,15 @@
     <view class="card-title" style="padding: 32rpx 32rpx 0;">效率统计</view>
     <view class="efficiency-grid">
       <view class="eff-box" style="background: rgba(8,145,178,0.05);">
-        <text class="eff-value font-mono" style="color: #0891B2;">¥{{coreStats.avgPrice.value}}</text>
+        <text class="eff-value font-mono" style="color: #0891B2;">¥{{coreStats.avgPriceDisplay}}</text>
         <text class="eff-label">平均单价/kWh</text>
       </view>
       <view class="eff-box" style="background: rgba(34,197,94,0.05);">
-        <text class="eff-value font-mono" style="color: #22C55E;">{{coreStats.duration.value}}h</text>
+        <text class="eff-value font-mono" style="color: #22C55E;">{{coreStats.durationDisplay}}h</text>
         <text class="eff-label">平均充电时长</text>
       </view>
       <view class="eff-box" style="background: rgba(245,158,11,0.05);">
-        <text class="eff-value font-mono" style="color: #D97706;">{{coreStats.kwh.value / (coreStats.count.value || 1)}}</text>
+        <text class="eff-value font-mono" style="color: #D97706;">{{coreStats.avgKwhDisplay}}</text>
         <text class="eff-label">平均充电量kWh</text>
       </view>
     </view>

@@ -155,7 +155,7 @@
         bindtap="goToDetail"
       >
         <view class="recent-item-left">
-          <view class="recent-item-icon {{item.chargeType === 'slow' ? 'icon-slow' : 'icon-fast'}}">⚡</view>
+          <view class="recent-item-icon {{item.chargeType === 'super' ? 'icon-super' : item.chargeType === 'slow' ? 'icon-slow' : 'icon-fast'}}">⚡</view>
           <view class="recent-item-info">
             <text class="recent-item-name">{{item.stationName}}</text>
             <text class="recent-item-time">{{item.timeText}}</text>

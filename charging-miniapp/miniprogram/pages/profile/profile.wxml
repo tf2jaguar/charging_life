@@ -10,53 +10,17 @@
         <image wx:if="{{userInfo.avatarUrl}}" class="avatar-img" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
         <text wx:else class="avatar-icon">👤</text>
       </view>
-      <view class="user-info">
-        <text class="user-name">{{nickName}}</text>
-      </view>
+      <text class="user-name">{{nickName}}</text>
     </view>
 
-    <!-- 未登录 - 初始状态 -->
-    <view class="user-area" wx:if="{{!isLoggedIn && loginStep === 0}}">
+    <!-- 未登录 -->
+    <view class="user-area" wx:if="{{!isLoggedIn}}">
       <view class="avatar">
         <text class="avatar-icon">👤</text>
       </view>
       <view class="user-info">
         <text class="user-name">未登录</text>
-        <text class="login-hint">点击登录获取专属数据</text>
-      </view>
-      <button class="login-btn" bindtap="onStartLogin">登录</button>
-    </view>
-
-    <!-- 未登录 - 第一步：填昵称 -->
-    <view class="login-form" wx:if="{{!isLoggedIn && loginStep === 1}}">
-      <text class="login-step-title">第一步：设置昵称</text>
-      <view class="login-input-row">
-        <input
-          class="login-input"
-          type="nickname"
-          placeholder="请输入微信昵称"
-          value="{{tempNickName}}"
-          bindinput="onNickNameInput"
-          bindconfirm="onNickNameConfirm"
-        />
-      </view>
-      <button class="login-next-btn" bindtap="onNickNameConfirm">下一步</button>
-    </view>
-
-    <!-- 未登录 - 第二步：选头像 -->
-    <view class="login-form" wx:if="{{!isLoggedIn && loginStep === 2}}">
-      <text class="login-step-title">第二步：选择头像</text>
-      <view class="login-avatar-area">
-        <button class="login-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-          <image wx:if="{{tempAvatarUrl}}" class="login-avatar-preview" src="{{tempAvatarUrl}}" mode="aspectFill" />
-          <view wx:else class="login-avatar-placeholder">
-            <text class="login-avatar-icon">📷</text>
-            <text class="login-avatar-text">选择头像</text>
-          </view>
-        </button>
-      </view>
-      <view class="login-skip-row">
-        <text class="login-skip" bindtap="onSkipAvatar">跳过，暂不设置头像</text>
+        <text class="login-hint">添加车辆时需授权登录</text>
       </view>
     </view>
 
@@ -178,4 +142,11 @@
   <view class="logout-area" wx:if="{{isLoggedIn}}">
     <text class="logout-btn" bindtap="onLogout">退出登录</text>
   </view>
+
+  <!-- 授权弹窗 -->
+  <auth-popup
+    show="{{showAuthPopup}}"
+    bind:success="onAuthSuccess"
+    bind:close="onAuthClose"
+  />
 </view>

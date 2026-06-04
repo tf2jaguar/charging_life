@@ -1,0 +1,41 @@
+<view class="auth-popup-mask {{show ? 'show' : ''}}" bindtap="onMaskClick">
+  <view class="auth-popup {{show ? 'show' : ''}}" catchtap="onStopBubble">
+
+    <view class="auth-popup-header">
+      <text class="auth-popup-title">授权登录</text>
+      <text class="auth-popup-close" bindtap="onClose">✕</text>
+    </view>
+
+    <view class="auth-popup-body" wx:if="{{step === 1}}">
+      <text class="auth-step-label">设置昵称</text>
+      <view class="auth-input-row">
+        <input
+          class="auth-input"
+          type="nickname"
+          placeholder="请输入微信昵称"
+          value="{{tempNickName}}"
+          bindinput="onNickNameInput"
+          bindconfirm="onNickNameConfirm"
+        />
+      </view>
+      <button class="auth-next-btn" bindtap="onNickNameConfirm">下一步</button>
+    </view>
+
+    <view class="auth-popup-body" wx:if="{{step === 2}}">
+      <text class="auth-step-label">选择头像</text>
+      <view class="auth-avatar-area">
+        <button class="auth-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image wx:if="{{tempAvatarUrl}}" class="auth-avatar-preview" src="{{tempAvatarUrl}}" mode="aspectFill" />
+          <view wx:else class="auth-avatar-placeholder">
+            <text class="auth-avatar-icon">📷</text>
+            <text class="auth-avatar-text">选择头像</text>
+          </view>
+        </button>
+      </view>
+      <view class="auth-skip-row">
+        <text class="auth-skip" bindtap="onSkipAvatar">跳过，暂不设置头像</text>
+      </view>
+    </view>
+
+  </view>
+</view>

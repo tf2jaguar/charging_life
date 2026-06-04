@@ -126,10 +126,11 @@ exports.main = async (event, context) => {
           .get()
 
         const slots = [
-          { label: '0-6点', range: [0, 6], count: 0 },
-          { label: '6-12点', range: [6, 12], count: 0 },
-          { label: '12-18点', range: [12, 18], count: 0 },
-          { label: '18-24点', range: [18, 24], count: 0 },
+          { label: '0-7点', range: [0, 7], count: 0 },
+          { label: '7-12点', range: [7, 12], count: 0 },
+          { label: '12-17点', range: [12, 17], count: 0 },
+          { label: '17-22点', range: [17, 22], count: 0 },
+          { label: '22-24点', range: [22, 24], count: 0 },
         ]
 
         res.data.forEach(r => {

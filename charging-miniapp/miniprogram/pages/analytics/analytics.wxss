@@ -2,6 +2,7 @@
   background: var(--app-bg, #ECFEFF);
   min-height: 100vh;
   padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom) + 120rpx);
 }
 
 .period-switch {
@@ -156,8 +157,8 @@
 /* 时段分布 */
 .time-dist {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12rpx;
   padding: 32rpx;
 }
 

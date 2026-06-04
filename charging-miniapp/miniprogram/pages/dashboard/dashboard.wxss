@@ -257,13 +257,18 @@
 }
 
 .icon-fast {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22C55E;
+  background: rgba(8, 145, 178, 0.1);
+  color: #0891B2;
 }
 
 .icon-slow {
-  background: rgba(8, 145, 178, 0.1);
-  color: #0891B2;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.icon-super {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8B5CF6;
 }
 
 .recent-item-info {

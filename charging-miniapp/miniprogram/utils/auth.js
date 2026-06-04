@@ -2,7 +2,6 @@ const { callCloud } = require('./cloud')
 
 let _userInfo = null
 let _openid = null
-let _explicitLogin = false
 
 const getUserInfo = function () {
   return _userInfo
@@ -12,42 +11,50 @@ const getOpenId = function () {
   return _openid
 }
 
-const login = function () {
+const isLoggedIn = function () {
+  return !!_userInfo
+}
+
+// Call cloud to get openid and check if user exists
+const initOpenId = function () {
   return wx.cloud.callFunction({
     name: 'login',
-    data: {},
+    data: { action: 'getUser' },
   }).then(function (res) {
-    if (res.result) {
-      _openid = res.result.openid
-      _userInfo = res.result.userInfo || null
+    if (res.result && res.result.code === 0) {
+      _openid = res.result.data.openid
+      _userInfo = res.result.data.userInfo || null
       var app = getApp()
       if (app) {
         app.globalData.userInfo = _userInfo
         app.globalData.openid = _openid
       }
-      return res.result
+      return res.result.data
     }
     return Promise.reject(res)
   })
 }
 
-const ensureLogin = function () {
-  if (_openid) return Promise.resolve({ openid: _openid, userInfo: _userInfo })
-  return login()
-}
-
-const isLoggedIn = function () {
-  return _explicitLogin
-}
-
-const requireLogin = function () {
-  return _explicitLogin
+// Save user info (nickName + avatarUrl) to cloud, called after auth popup
+const saveUserInfo = function (nickName, avatarUrl) {
+  return callCloud('login', {
+    nickName: nickName,
+    avatarUrl: avatarUrl,
+  }).then(function (data) {
+    _userInfo = data.userInfo
+    _openid = data.openid || _openid
+    var app = getApp()
+    if (app) {
+      app.globalData.userInfo = _userInfo
+      app.globalData.openid = _openid
+    }
+    return data
+  })
 }
 
 const logout = function () {
   _userInfo = null
   _openid = null
-  _explicitLogin = false
   var app = getApp()
   if (app) {
     app.globalData.userInfo = null
@@ -55,26 +62,11 @@ const logout = function () {
   }
 }
 
-const updateUserInfo = function (info) {
-  if (_userInfo) {
-    Object.assign(_userInfo, info)
-  } else {
-    _userInfo = info
-  }
-  _explicitLogin = true
-  var app = getApp()
-  if (app) {
-    app.globalData.userInfo = _userInfo
-  }
-}
-
 module.exports = {
   getUserInfo: getUserInfo,
   getOpenId: getOpenId,
-  login: login,
-  ensureLogin: ensureLogin,
   isLoggedIn: isLoggedIn,
-  requireLogin: requireLogin,
+  initOpenId: initOpenId,
+  saveUserInfo: saveUserInfo,
   logout: logout,
-  updateUserInfo: updateUserInfo,
 }

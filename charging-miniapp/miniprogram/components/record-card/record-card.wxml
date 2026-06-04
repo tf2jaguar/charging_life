@@ -1,6 +1,6 @@
 <navigator url="/pages/record-detail/record-detail?id={{record._id}}" class="record-card" hover-class="record-card-active">
   <view class="record-header">
-    <view class="record-icon {{record.chargeType === 'slow' ? 'record-icon-slow' : 'record-icon-fast'}}">
+    <view class="record-icon {{record.chargeType === 'super' ? 'record-icon-super' : record.chargeType === 'slow' ? 'record-icon-slow' : 'record-icon-fast'}}">
       <text>⚡</text>
     </view>
     <view class="record-info">
@@ -32,10 +32,8 @@
   </view>
   <view class="record-efficiency">
     <view class="efficiency-item">
-      <text class="efficiency-label">充电损耗</text>
-      <text class="efficiency-value font-mono {{record.chargeLoss > 0 ? 'efficiency-warn' : 'efficiency-good'}}">
-        {{record.chargeLoss ? record.chargeLoss + '%' : '--'}}
-      </text>
+      <text class="efficiency-label">{{record.chargeLoss > 5 ? '电池性能下降' : '充电损耗'}}</text>
+      <text class="efficiency-value font-mono {{record.chargeLoss > 5 ? 'efficiency-warn' : 'efficiency-good'}}">{{record.chargeLoss ? record.chargeLoss + '%' : '--'}}</text>
     </view>
     <view class="efficiency-item">
       <text class="efficiency-label">平均功率</text>

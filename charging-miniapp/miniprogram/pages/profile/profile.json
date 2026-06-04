@@ -1,3 +1,6 @@
 {
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "auth-popup": "/components/auth-popup/auth-popup"
+  }
 }

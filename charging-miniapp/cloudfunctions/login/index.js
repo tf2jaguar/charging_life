@@ -5,6 +5,28 @@ const db = cloud.database()
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
+
+  if (event.action === 'getUser') {
+    try {
+      const userRes = await db.collection('users').where({ _openid: openid }).get()
+      if (userRes.data.length === 0) {
+        return { code: 0, data: { openid, userInfo: null } }
+      }
+      const user = userRes.data[0]
+      let defaultVehicle = null
+      if (user.defaultVehicleId) {
+        try {
+          const vehicleRes = await db.collection('vehicles').doc(user.defaultVehicleId).get()
+          defaultVehicle = vehicleRes.data
+        } catch (e) { /* vehicle may be deleted */ }
+      }
+      return { code: 0, data: { openid, userInfo: user, defaultVehicle } }
+    } catch (err) {
+      return { code: -1, msg: err.message }
+    }
+  }
+
+  // action: saveUser — save or update user info
   console.info('[login] openid=%s, nickName=%s, avatarUrl=%s', openid, event.nickName || '', event.avatarUrl || '')
 
   try {

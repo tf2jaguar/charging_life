@@ -16,10 +16,7 @@ Page({
       budgetLimit: 800,
       theme: 'light',
     },
-    // 登录流程
-    loginStep: 0, // 0=未开始, 1=填昵称, 2=选头像
-    tempNickName: '',
-    tempAvatarUrl: '',
+    showAuthPopup: false,
     statusBarHeight: 0,
   },
 
@@ -37,7 +34,7 @@ Page({
 
   async loadData() {
     try {
-      await auth.ensureLogin()
+      await auth.initOpenId()
       const userInfo = auth.getUserInfo()
       const loggedIn = auth.isLoggedIn()
 
@@ -50,7 +47,6 @@ Page({
         this.setData({
           userInfo,
           isLoggedIn: true,
-          loginStep: 0,
           nickName: userInfo ? userInfo.nickName || '' : '',
           vehicles: vehicles || [],
           totalKwh: statsRes && statsRes.kwh ? toFixed(statsRes.kwh.value, 1) : '-',
@@ -62,7 +58,6 @@ Page({
         this.setData({
           userInfo: null,
           isLoggedIn: false,
-          loginStep: 0,
           nickName: '',
           vehicles: [],
           totalKwh: '-',
@@ -75,78 +70,33 @@ Page({
     }
   },
 
-  // 分步登录：开始登录 → 进入昵称输入
-  onStartLogin() {
-    this.setData({ loginStep: 1, tempNickName: '', tempAvatarUrl: '' })
-  },
-
-  // 昵称输入
-  onNickNameInput(e) {
-    this.setData({ tempNickName: e.detail.value })
-  },
-
-  // 昵称确认 → 进入头像选择
-  onNickNameConfirm() {
-    if (!this.data.tempNickName.trim()) {
-      wx.showToast({ title: '请输入昵称', icon: 'none' })
-      return
-    }
-    this.setData({ loginStep: 2 })
-  },
-
-  // 选择头像 → 完成登录
-  onChooseAvatar(e) {
-    const avatarUrl = e.detail.avatarUrl || ''
-    this.setData({ tempAvatarUrl: avatarUrl })
-    this.onLogin()
-  },
-
-  // 跳过头像 → 完成登录
-  onSkipAvatar() {
-    this.onLogin()
-  },
-
-  // 执行登录
-  async onLogin() {
-    const nickName = this.data.tempNickName.trim()
-    const avatarUrl = this.data.tempAvatarUrl
-
-    try {
-      await auth.ensureLogin()
-
-      auth.updateUserInfo({ nickName: nickName, avatarUrl: avatarUrl })
-
-      await callCloud('login', {
-        nickName: nickName,
-        avatarUrl: avatarUrl,
-      })
-
-      this.setData({
-        userInfo: { nickName, avatarUrl },
-        isLoggedIn: true,
-        loginStep: 0,
-        nickName: nickName,
-      })
-
-      wx.showToast({ title: '登录成功', icon: 'success' })
-      this.loadData()
-    } catch (err) {
-      console.error('login error', err)
-      wx.showToast({ title: '登录失败', icon: 'none' })
-    }
-  },
-
   goToAddCar() {
     if (!auth.isLoggedIn()) {
-      wx.showToast({ title: '请先登录', icon: 'none' })
+      this.setData({ showAuthPopup: true })
       return
     }
     wx.navigateTo({ url: '/pages/add-car/add-car' })
   },
 
+  onAuthSuccess(e) {
+    const { nickName, avatarUrl } = e.detail
+    this.setData({
+      userInfo: { nickName, avatarUrl },
+      isLoggedIn: true,
+      nickName: nickName,
+      showAuthPopup: false,
+    })
+    wx.showToast({ title: '授权成功', icon: 'success' })
+    this.loadData()
+  },
+
+  onAuthClose() {
+    this.setData({ showAuthPopup: false })
+  },
+
   onImportData() {
     if (!auth.isLoggedIn()) {
-      wx.showToast({ title: '请先登录', icon: 'none' })
+      this.setData({ showAuthPopup: true })
       return
     }
     wx.chooseMessageFile({
@@ -255,7 +205,6 @@ Page({
           auth.logout()
           this.setData({
             isLoggedIn: false,
-            loginStep: 0,
             nickName: '',
             userInfo: null,
             vehicles: [],

@@ -92,7 +92,7 @@ Page({
     }
 
     try {
-      await auth.ensureLogin()
+      await auth.initOpenId()
       const userInfo = auth.getUserInfo()
       if (userInfo && userInfo.nickName) {
         this.setData({ nickName: userInfo.nickName })
@@ -217,10 +217,7 @@ Page({
 
   goToAddRecord() {
     if (!auth.isLoggedIn()) {
-      wx.showToast({ title: '请先登录', icon: 'none' })
-      setTimeout(function () {
-        wx.switchTab({ url: '/pages/profile/profile' })
-      }, 1000)
+      wx.switchTab({ url: '/pages/profile/profile' })
       return
     }
     wx.navigateTo({ url: '/pages/add-record/add-record' })

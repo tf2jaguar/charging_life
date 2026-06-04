@@ -39,6 +39,14 @@ Page({
         callCloud('stats', { action: 'trend' }),
       ])
 
+      if (overview) {
+        overview.kwhDisplay = toFixed(overview.kwh.value, 2)
+        overview.costDisplay = toFixed(overview.cost.value, 2)
+        overview.avgPriceDisplay = toFixed(overview.avgPrice.value, 2)
+        overview.durationDisplay = toFixed(overview.duration.value, 2)
+        overview.avgKwhDisplay = toFixed(overview.kwh.value / (overview.count.value || 1), 2)
+      }
+
       this.setData({
         coreStats: overview,
         timeDist,

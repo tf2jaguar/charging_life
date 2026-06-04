@@ -9,12 +9,19 @@ App({
     }
     this.globalData = {
       userInfo: null,
+      openid: null,
       defaultVehicle: null,
     }
+
+    var auth = require('./utils/auth')
+    auth.initOpenId().catch(function (err) {
+      console.error('initOpenId failed', err)
+    })
   },
 
   globalData: {
     userInfo: null,
+    openid: null,
     defaultVehicle: null,
   }
 })

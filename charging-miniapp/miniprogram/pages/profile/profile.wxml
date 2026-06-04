@@ -72,10 +72,13 @@
       <text class="section-title">数据管理</text>
     </view>
     <view class="menu-list">
-      <view class="menu-item">
+      <view class="menu-item" bindtap="onExportData">
         <view class="menu-left">
           <view class="menu-icon menu-icon-violet">📄</view>
-          <text class="menu-text">导出数据</text>
+          <view>
+            <text class="menu-text">导出数据</text>
+            <text class="menu-sub">导出车辆和充电记录为 JSON 文件</text>
+          </view>
         </view>
         <text class="menu-arrow">›</text>
       </view>

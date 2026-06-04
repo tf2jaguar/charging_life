@@ -94,6 +94,83 @@ Page({
     this.setData({ showAuthPopup: false })
   },
 
+  onExportData() {
+    if (!auth.isLoggedIn()) {
+      this.setData({ showAuthPopup: true })
+      return
+    }
+    this.doExport()
+  },
+
+  async doExport() {
+    wx.showLoading({ title: '导出中...', mask: true })
+    try {
+      const [vehicles, recordsRes] = await Promise.all([
+        callCloud('vehicle', { action: 'list' }),
+        callCloud('record', { action: 'list', data: { page: 1, pageSize: 1000 } }),
+      ])
+
+      const exportVehicles = (vehicles || []).map(v => ({
+        brand: v.brand || '',
+        model: v.model || '',
+        trim: v.trim || '',
+        batteryCapacity: v.batteryCapacity || 0,
+        plateNumber: v.plateNumber || '',
+        isDefault: v.isDefault || false,
+      }))
+
+      const exportRecords = (recordsRes && recordsRes.list || []).map(r => ({
+        stationName: r.stationName || '',
+        chargeType: r.chargeType || 'fast',
+        startTime: r.startTime || '',
+        endTime: r.endTime || '',
+        startSOC: r.startSOC || 0,
+        endSOC: r.endSOC || 0,
+        chargeKwh: r.chargeKwh || 0,
+        cost: r.cost || 0,
+        mileage: r.mileage || 0,
+        batteryCapacity: r.batteryCapacity || 0,
+        remark: r.remark || '',
+      }))
+
+      if (exportVehicles.length === 0 && exportRecords.length === 0) {
+        wx.hideLoading()
+        wx.showToast({ title: '暂无数据可导出', icon: 'none' })
+        return
+      }
+
+      const data = { vehicles: exportVehicles, records: exportRecords }
+      const json = JSON.stringify(data, null, 2)
+
+      const fs = wx.getFileSystemManager()
+      const tempPath = wx.env.USER_DATA_PATH + '/charging_export_' + Date.now() + '.json'
+      fs.writeFileSync(tempPath, json, 'utf-8')
+
+      wx.hideLoading()
+
+      wx.shareFileMessage({
+        filePath: tempPath,
+        fileName: '充电数据_' + new Date().toISOString().slice(0, 10) + '.json',
+        success: () => {
+          wx.showToast({ title: '已发送到聊天', icon: 'success' })
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+            console.error('shareFileMessage error', err)
+            wx.showToast({ title: '导出失败', icon: 'none' })
+          }
+        },
+        complete: () => {
+          try { fs.unlinkSync(tempPath) } catch (e) {}
+        },
+      })
+    } catch (err) {
+      wx.hideLoading()
+      console.error('export error', err)
+      wx.showToast({ title: '导出失败', icon: 'none' })
+    }
+  },
+
   onImportData() {
     if (!auth.isLoggedIn()) {
       this.setData({ showAuthPopup: true })

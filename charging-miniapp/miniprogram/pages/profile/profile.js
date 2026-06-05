@@ -102,11 +102,11 @@ Page({
       this.setData({ showAuthPopup: true })
       return
     }
-    this.doExport()
+    this.prepareExport()
   },
 
-  async doExport() {
-    wx.showLoading({ title: '导出中...', mask: true })
+  async prepareExport() {
+    wx.showLoading({ title: '准备中...', mask: true })
     try {
       const [vehicles, recordsRes] = await Promise.all([
         callCloud('vehicle', { action: 'list' }),
@@ -125,8 +125,8 @@ Page({
       const exportRecords = (recordsRes && recordsRes.list || []).map(r => ({
         stationName: r.stationName || '',
         chargeType: r.chargeType || 'fast',
-        startTime: r.startTime || '',
-        endTime: r.endTime || '',
+        startTime: r.startTime ? new Date(r.startTime).toISOString() : '',
+        endTime: r.endTime ? new Date(r.endTime).toISOString() : '',
         startSOC: r.startSOC || 0,
         endSOC: r.endSOC || 0,
         chargeKwh: r.chargeKwh || 0,
@@ -151,26 +151,57 @@ Page({
 
       wx.hideLoading()
 
-      wx.shareFileMessage({
-        filePath: tempPath,
-        fileName: '充电数据_' + new Date().toISOString().slice(0, 10) + '.json',
-        success: () => {
-          wx.showToast({ title: '已发送到聊天', icon: 'success' })
-        },
-        fail: (err) => {
-          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-            console.error('shareFileMessage error', err)
-            wx.showToast({ title: '导出失败', icon: 'none' })
+      const total = exportVehicles.length + exportRecords.length
+      this._exportFilePath = tempPath
+      this._exportFileName = '充电数据_' + new Date().toISOString().slice(0, 10) + '.json'
+
+      wx.showModal({
+        title: '导出数据',
+        content: '共 ' + total + ' 条数据，确认发送到聊天？',
+        confirmText: '发送',
+        success: (res) => {
+          if (res.confirm) {
+            this.doShareFile()
+          } else {
+            this.cleanupExport()
           }
-        },
-        complete: () => {
-          try { fs.unlinkSync(tempPath) } catch (e) {}
         },
       })
     } catch (err) {
       wx.hideLoading()
       console.error('export error', err)
       wx.showToast({ title: '导出失败', icon: 'none' })
+    }
+  },
+
+  doShareFile() {
+    const tempPath = this._exportFilePath
+    const fileName = this._exportFileName
+    if (!tempPath) return
+
+    wx.shareFileMessage({
+      filePath: tempPath,
+      fileName: fileName,
+      success: () => {
+        wx.showToast({ title: '已发送到聊天', icon: 'success' })
+      },
+      fail: (err) => {
+        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+          console.error('shareFileMessage error', err)
+          wx.showToast({ title: '导出失败', icon: 'none' })
+        }
+      },
+      complete: () => {
+        this.cleanupExport()
+      },
+    })
+  },
+
+  cleanupExport() {
+    if (this._exportFilePath) {
+      try { wx.getFileSystemManager().unlinkSync(this._exportFilePath) } catch (e) {}
+      this._exportFilePath = null
+      this._exportFileName = null
     }
   },
 

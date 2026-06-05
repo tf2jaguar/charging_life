@@ -3,12 +3,30 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
+// 将无时区的时间字符串补上 +08:00，确保北京时间被正确解析
+function fixTimezone(str) {
+  if (!str || typeof str !== 'string') return str
+  // 已经带时区信息（Z 或 +HH:MM）的，不处理
+  if (/Z|[+-]\d{2}:\d{2}$/.test(str)) return str
+  return str + '+08:00'
+}
+
+function toDate(val) {
+  if (!val) return null
+  if (val instanceof Date) return val
+  if (typeof val === 'string') return new Date(fixTimezone(val))
+  if (typeof val === 'number') return new Date(val)
+  return new Date(val)
+}
+
 function calcDerived(data) {
   const derived = {}
 
-  if (data.startTime && data.endTime) {
-    const startMs = new Date(data.startTime).getTime()
-    const endMs = new Date(data.endTime).getTime()
+  const startTime = toDate(data.startTime)
+  const endTime = toDate(data.endTime)
+  if (startTime && endTime) {
+    const startMs = startTime.getTime()
+    const endMs = endTime.getTime()
     if (!isNaN(startMs) && !isNaN(endMs)) {
       derived.duration = Math.max(0, Math.round((endMs - startMs) / 60000))
     }
@@ -53,8 +71,8 @@ exports.main = async (event, context) => {
           vehicleId: data.vehicleId || '',
           stationName: data.stationName || '',
           chargeType: data.chargeType || 'fast',
-          startTime: data.startTime ? new Date(data.startTime) : db.serverDate(),
-          endTime: data.endTime ? new Date(data.endTime) : db.serverDate(),
+          startTime: data.startTime ? toDate(data.startTime) : db.serverDate(),
+          endTime: data.endTime ? toDate(data.endTime) : db.serverDate(),
           startSOC: data.startSOC || 0,
           endSOC: data.endSOC || 0,
           chargeKwh: data.chargeKwh || 0,
@@ -74,6 +92,8 @@ exports.main = async (event, context) => {
         if (recordRes.data._openid !== openid) {
           return { code: -1, msg: '无权修改' }
         }
+        if (data.startTime) data.startTime = toDate(data.startTime)
+        if (data.endTime) data.endTime = toDate(data.endTime)
         const derived = calcDerived(data)
         const updateData = { ...data, ...derived }
         delete updateData.recordId
@@ -110,7 +130,7 @@ exports.main = async (event, context) => {
 
         if (data.startTime && data.endTime) {
           query = query.where({
-            startTime: _.gte(new Date(data.startTime)).and(_.lte(new Date(data.endTime)))
+            startTime: _.gte(toDate(data.startTime)).and(_.lte(toDate(data.endTime)))
           })
         }
 

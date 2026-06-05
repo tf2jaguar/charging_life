@@ -176,6 +176,13 @@
   border-radius: 8rpx;
 }
 
+.vehicle-delete {
+  font-size: 36rpx;
+  color: #CBD5E1;
+  padding: 8rpx 16rpx;
+  line-height: 1;
+}
+
 .empty-vehicle {
   padding: 32rpx;
   text-align: center;

@@ -1,12 +1,16 @@
 const { callCloud } = require('../../utils/cloud')
 const { getGreeting, formatRelativeDate, formatDate, formatDuration, toFixed } = require('../../utils/util')
 const auth = require('../../utils/auth')
+const app = getApp()
 
 Page({
   data: {
     greeting: '',
     nickName: '未登录',
     defaultVehicle: null,
+    vehicles: [],
+    currentVehicleId: null,
+    showVehiclePicker: false,
     lastChargeKwh: '',
     lastChargeTimeText: '',
     overview: {
@@ -59,6 +63,8 @@ Page({
         loading: false,
         nickName: '未登录',
         defaultVehicle: null,
+        vehicles: [],
+        currentVehicleId: null,
         lastChargeKwh: '',
         lastChargeTimeText: '',
         overview: {
@@ -98,14 +104,18 @@ Page({
         this.setData({ nickName: userInfo.nickName })
       }
 
+      const vehicleId = app.getCurrentVehicleId()
+
       const [vehicles, overviewRes, recentRes, calendarRes] = await Promise.all([
         callCloud('vehicle', { action: 'list' }),
-        callCloud('stats', { action: 'overview', period: 'month' }),
-        callCloud('stats', { action: 'recentRecords', limit: 2 }),
-        callCloud('stats', { action: 'calendar' }),
+        callCloud('stats', { action: 'overview', period: 'month', vehicleId }),
+        callCloud('stats', { action: 'recentRecords', limit: 2, vehicleId }),
+        callCloud('stats', { action: 'calendar', vehicleId }),
       ])
 
-      const defaultVehicle = (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
+      const defaultVehicle = vehicleId
+        ? (vehicles || []).find(v => v._id === vehicleId) || (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
+        : (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
       const lastRecord = (recentRes && recentRes[0]) || null
       const lastChargeKwh = lastRecord ? toFixed(lastRecord.chargeKwh, 1) : ''
       const lastChargeTimeText = lastRecord ? formatRelativeDate(lastRecord.startTime) : ''
@@ -155,6 +165,8 @@ Page({
 
       this.setData({
         defaultVehicle,
+        vehicles: vehicles || [],
+        currentVehicleId: vehicleId,
         lastChargeKwh,
         lastChargeTimeText,
         overview: overviewRes || {
@@ -193,7 +205,8 @@ Page({
 
   onCalendarMonthChange(e) {
     const { year, month } = e.detail
-    callCloud('stats', { action: 'calendar', year, month }).then(res => {
+    const vehicleId = app.getCurrentVehicleId()
+    callCloud('stats', { action: 'calendar', year, month, vehicleId }).then(res => {
       this.setData({
         calendarDays: res.days || [],
         calendarKwh: res.kwh || {},
@@ -201,6 +214,28 @@ Page({
         calendarTotalKwh: res.totalKwh || 0,
       })
     })
+  },
+
+  onVehicleCardTap() {
+    this.setData({ showVehiclePicker: true })
+  },
+
+  onVehiclePickerClose() {
+    this.setData({ showVehiclePicker: false })
+  },
+
+  onSelectVehicle(e) {
+    const { id } = e.currentTarget.dataset
+    app.setCurrentVehicleId(id)
+    this.setData({ showVehiclePicker: false, currentVehicleId: id })
+
+    const selVehicle = id ? this.data.vehicles.find(v => v._id === id) : null
+    wx.showToast({ title: selVehicle ? selVehicle.brand + ' ' + selVehicle.model : '全部车辆', icon: 'none' })
+    this.loadData()
+  },
+
+  onPickerMaskTap() {
+    this.setData({ showVehiclePicker: false })
   },
 
   goToProfile() {

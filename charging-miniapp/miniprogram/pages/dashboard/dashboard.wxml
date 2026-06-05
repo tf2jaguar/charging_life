@@ -21,7 +21,7 @@
     </view>
 
     <!-- 车辆信息卡 -->
-    <view class="vehicle-card glass-card" bindtap="goToProfile" wx:if="{{defaultVehicle}}">
+    <view class="vehicle-card glass-card" bindtap="onVehicleCardTap" wx:if="{{defaultVehicle}}">
       <view class="vehicle-content">
         <view class="vehicle-icon">🚗</view>
         <view class="vehicle-info">
@@ -36,6 +36,7 @@
           <text class="vehicle-charge-time">上次充电 · {{lastChargeTimeText}}</text>
         </view>
       </view>
+      <text class="vehicle-switch-arrow">切换 ›</text>
     </view>
   </view>
 
@@ -164,6 +165,31 @@
         <view class="recent-item-right">
           <text class="recent-item-kwh font-mono">{{item.chargeKwh}} kWh</text>
           <text class="recent-item-cost">¥{{item.cost}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 车辆选择弹窗 -->
+  <view class="picker-mask" wx:if="{{showVehiclePicker}}" bindtap="onPickerMaskTap">
+    <view class="picker-panel" catchtap="">
+      <view class="picker-header">
+        <text class="picker-title">选择车辆</text>
+        <text class="picker-close" bindtap="onVehiclePickerClose">✕</text>
+      </view>
+      <view class="picker-list">
+        <view class="picker-item {{!currentVehicleId ? 'picker-item-active' : ''}}" bindtap="onSelectVehicle" data-id="">
+          <view class="picker-item-icon">🚘</view>
+          <text class="picker-item-name">全部车辆</text>
+          <text wx:if="{{!currentVehicleId}}" class="picker-item-check">✓</text>
+        </view>
+        <view wx:for="{{vehicles}}" wx:key="_id" class="picker-item {{currentVehicleId === item._id ? 'picker-item-active' : ''}}" bindtap="onSelectVehicle" data-id="{{item._id}}">
+          <view class="picker-item-icon">🚗</view>
+          <view class="picker-item-info">
+            <text class="picker-item-name">{{item.brand}} {{item.model}}</text>
+            <text class="picker-item-trim">{{item.trim}} · {{item.batteryCapacity}}kWh</text>
+          </view>
+          <text wx:if="{{currentVehicleId === item._id}}" class="picker-item-check">✓</text>
         </view>
       </view>
     </view>

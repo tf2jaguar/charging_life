@@ -1,6 +1,7 @@
 const { callCloud } = require('../../utils/cloud')
 const { toFixed } = require('../../utils/util')
 const auth = require('../../utils/auth')
+const app = getApp()
 
 Page({
   data: {
@@ -31,12 +32,13 @@ Page({
     this.setData({ loading: true })
     try {
       const period = this.data.period
+      const vehicleId = app.getCurrentVehicleId()
       const [overview, timeDist, typeDist, topStations, trend] = await Promise.all([
-        callCloud('stats', { action: 'overview', period }),
-        callCloud('stats', { action: 'timeDistribution', period }),
-        callCloud('stats', { action: 'typeDistribution', period }),
-        callCloud('stats', { action: 'topStations', period }),
-        callCloud('stats', { action: 'trend' }),
+        callCloud('stats', { action: 'overview', period, vehicleId }),
+        callCloud('stats', { action: 'timeDistribution', period, vehicleId }),
+        callCloud('stats', { action: 'typeDistribution', period, vehicleId }),
+        callCloud('stats', { action: 'topStations', period, vehicleId }),
+        callCloud('stats', { action: 'trend', vehicleId }),
       ])
 
       if (overview) {

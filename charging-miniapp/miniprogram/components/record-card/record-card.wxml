@@ -1,7 +1,7 @@
 <navigator url="/pages/record-detail/record-detail?id={{record._id}}" class="record-card" hover-class="record-card-active">
   <view class="record-header">
     <view class="record-icon {{record.chargeType === 'super' ? 'record-icon-super' : record.chargeType === 'slow' ? 'record-icon-slow' : 'record-icon-fast'}}">
-      <text>⚡</text>
+      <image class="flashlight-icon" src="{{record.chargeType === 'super' ? '/assets/icons/flashlight-puper.svg' : record.chargeType === 'slow' ? '/assets/icons/flashlight-green.svg' : '/assets/icons/flashlight-blue.svg'}}" mode="aspectFit" />
     </view>
     <view class="record-info">
       <view class="record-name-row">

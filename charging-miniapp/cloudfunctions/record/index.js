@@ -96,11 +96,17 @@ exports.main = async (event, context) => {
       case 'list': {
         const page = data.page || 1
         const pageSize = data.pageSize || 20
-        let query = db.collection('records').where({ _openid: openid })
+        let conditions = { _openid: openid }
+
+        if (data.vehicleId) {
+          conditions.vehicleId = data.vehicleId
+        }
 
         if (data.chargeType) {
-          query = query.where({ chargeType: data.chargeType })
+          conditions.chargeType = data.chargeType
         }
+
+        let query = db.collection('records').where(conditions)
 
         if (data.startTime && data.endTime) {
           query = query.where({

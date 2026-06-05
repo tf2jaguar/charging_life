@@ -59,6 +59,7 @@
           <text class="vehicle-trim">{{item.trim}} · {{item.batteryCapacity}}kWh</text>
         </view>
         <text wx:if="{{item.isDefault}}" class="default-tag">默认</text>
+        <text wx:else class="vehicle-delete" bindtap="onDeleteVehicle" data-id="{{item._id}}" data-index="{{index}}">×</text>
       </view>
       <view wx:if="{{!vehicles.length}}" class="empty-vehicle" bindtap="goToAddCar">
         <text class="empty-text">+ 添加车辆</text>

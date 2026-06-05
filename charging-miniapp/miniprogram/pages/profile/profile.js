@@ -1,6 +1,7 @@
 const { callCloud } = require('../../utils/cloud')
 const { toFixed } = require('../../utils/util')
 const auth = require('../../utils/auth')
+const app = getApp()
 
 Page({
   data: {
@@ -18,6 +19,7 @@ Page({
     },
     showAuthPopup: false,
     statusBarHeight: 0,
+    _tapCountMap: {},
   },
 
   onShow() {
@@ -39,9 +41,10 @@ Page({
       const loggedIn = auth.isLoggedIn()
 
       if (loggedIn) {
+        const vehicleId = app.getCurrentVehicleId()
         const [vehicles, statsRes] = await Promise.all([
           callCloud('vehicle', { action: 'list' }),
-          callCloud('stats', { action: 'overview', period: 'year' }),
+          callCloud('stats', { action: 'overview', period: 'year', vehicleId }),
         ])
 
         this.setData({
@@ -266,6 +269,57 @@ Page({
       console.error('import error', err)
       wx.showToast({ title: '导入失败，请检查文件格式', icon: 'none' })
     }
+  },
+
+  onDeleteVehicle(e) {
+    const { id, index } = e.currentTarget.dataset
+    const tapCountMap = this.data._tapCountMap || {}
+    const key = id
+    const now = Date.now()
+    const lastTap = tapCountMap[key] || { count: 0, time: 0 }
+
+    if (now - lastTap.time < 2000) {
+      lastTap.count += 1
+    } else {
+      lastTap.count = 1
+    }
+    lastTap.time = now
+    tapCountMap[key] = lastTap
+    this.setData({ _tapCountMap: tapCountMap })
+
+    if (lastTap.count >= 3) {
+      tapCountMap[key] = { count: 0, time: 0 }
+      this.setData({ _tapCountMap: tapCountMap })
+      wx.showModal({
+        title: '车辆ID',
+        content: id,
+        confirmText: '复制',
+        success: (res) => {
+          if (res.confirm) {
+            wx.setClipboardData({ data: id, success: () => wx.showToast({ title: '已复制', icon: 'success' }) })
+          }
+        },
+      })
+      return
+    }
+
+    const vehicle = this.data.vehicles[index]
+    wx.showModal({
+      title: '删除车辆',
+      content: '确定删除 ' + (vehicle.brand || '') + ' ' + (vehicle.model || '') + ' 吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await callCloud('vehicle', { action: 'delete', data: { vehicleId: id } })
+            wx.showToast({ title: '已删除', icon: 'success' })
+            this.loadData()
+          } catch (err) {
+            console.error('delete vehicle error', err)
+            wx.showToast({ title: '删除失败', icon: 'none' })
+          }
+        }
+      },
+    })
   },
 
   onNotificationToggle(e) {

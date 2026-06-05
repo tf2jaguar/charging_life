@@ -33,8 +33,13 @@ function getPrevPeriodRange(period) {
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
-  const { action, period, year, month } = event
+  const { action, period, year, month, vehicleId } = event
   const periodVal = period || 'month'
+
+  function addVehicleFilter(conditions) {
+    if (vehicleId) conditions.vehicleId = vehicleId
+    return conditions
+  }
   console.info('[stats] openid=%s, action=%s, period=%s', openid, action, periodVal)
 
   try {
@@ -45,10 +50,10 @@ exports.main = async (event, context) => {
 
         const [curRes, prevRes] = await Promise.all([
           db.collection('records')
-            .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+            .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
             .get(),
           db.collection('records')
-            .where({ _openid: openid, startTime: _.gte(prevStart).and(_.lt(prevEnd)) })
+            .where(addVehicleFilter({ _openid: openid, startTime: _.gte(prevStart).and(_.lt(prevEnd)) }))
             .get(),
         ])
 
@@ -100,7 +105,7 @@ exports.main = async (event, context) => {
         const end = new Date(yearVal + 1, 0, 1)
 
         const res = await db.collection('records')
-          .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+          .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
           .get()
 
         const months = Array.from({ length: 12 }, (_, i) => ({
@@ -122,7 +127,7 @@ exports.main = async (event, context) => {
       case 'timeDistribution': {
         const { start, end } = getPeriodRange(periodVal)
         const res = await db.collection('records')
-          .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+          .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
           .get()
 
         const slots = [
@@ -149,7 +154,7 @@ exports.main = async (event, context) => {
       case 'typeDistribution': {
         const { start, end } = getPeriodRange(periodVal)
         const res = await db.collection('records')
-          .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+          .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
           .get()
 
         const types = { super: 0, fast: 0, slow: 0 }
@@ -170,7 +175,7 @@ exports.main = async (event, context) => {
       case 'topStations': {
         const { start, end } = getPeriodRange(periodVal)
         const res = await db.collection('records')
-          .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+          .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
           .get()
 
         const stationMap = {}
@@ -196,7 +201,7 @@ exports.main = async (event, context) => {
         const end = new Date(y, m, 1)
 
         const res = await db.collection('records')
-          .where({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) })
+          .where(addVehicleFilter({ _openid: openid, startTime: _.gte(start).and(_.lt(end)) }))
           .get()
 
         const days = []
@@ -223,7 +228,7 @@ exports.main = async (event, context) => {
       case 'recentRecords': {
         const limit = event.limit || 2
         const res = await db.collection('records')
-          .where({ _openid: openid })
+          .where(addVehicleFilter({ _openid: openid }))
           .orderBy('startTime', 'desc')
           .limit(limit)
           .get()

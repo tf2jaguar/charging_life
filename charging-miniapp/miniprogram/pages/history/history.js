@@ -1,6 +1,7 @@
 const { callCloud } = require('../../utils/cloud')
 const { formatRelativeDate, formatDate, formatDuration, toFixed } = require('../../utils/util')
 const auth = require('../../utils/auth')
+const app = getApp()
 
 Page({
   data: {
@@ -32,9 +33,10 @@ Page({
   async loadRecords() {
     this.setData({ loading: true })
     try {
+      const vehicleId = app.getCurrentVehicleId()
       const res = await callCloud('record', {
         action: 'list',
-        data: { page: this.data.page, pageSize: 20 },
+        data: { page: this.data.page, pageSize: 20, vehicleId },
       })
 
       let allRecords = this.data.page === 1 ? (res.list || []) : this.data.records.concat(res.list || [])

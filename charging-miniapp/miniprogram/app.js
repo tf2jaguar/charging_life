@@ -23,5 +23,14 @@ App({
     userInfo: null,
     openid: null,
     defaultVehicle: null,
-  }
+    currentVehicleId: null,
+  },
+
+  getCurrentVehicleId() {
+    return this.globalData.currentVehicleId
+  },
+
+  setCurrentVehicleId(id) {
+    this.globalData.currentVehicleId = id
+  },
 })

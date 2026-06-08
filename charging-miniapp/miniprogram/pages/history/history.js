@@ -3,15 +3,19 @@ const { formatRelativeDate, formatDate, formatDuration, toFixed } = require('../
 const auth = require('../../utils/auth')
 const app = getApp()
 
+const FILTER_MAP = ['all', 'week', 'month', 'fast', 'slow']
+const FILTER_LABELS = ['全部', '本周', '本月', '快充', '慢充']
+
 Page({
   data: {
-    filters: ['全部', '本周', '本月', '快充', '慢充'],
+    filters: FILTER_LABELS,
     activeFilter: 0,
     records: [],
     groupedRecords: [],
-    totalCount: 0,
-    totalKwh: 0,
-    totalCost: 0,
+    summaryCount: 0,
+    summaryKwh: '0.0',
+    summaryCost: '0.00',
+    summaryLabel: '全部统计',
     page: 1,
     hasMore: true,
     loading: true,
@@ -28,6 +32,27 @@ Page({
       return
     }
     this.loadRecords()
+    this.loadSummary()
+  },
+
+  async loadSummary() {
+    try {
+      const vehicleId = app.getCurrentVehicleId()
+      const filter = FILTER_MAP[this.data.activeFilter]
+      const res = await callCloud('stats', {
+        action: 'overview',
+        filter,
+        vehicleId,
+      })
+      this.setData({
+        summaryCount: res.count.value,
+        summaryKwh: toFixed(res.kwh.value, 1),
+        summaryCost: toFixed(res.cost.value),
+        summaryLabel: FILTER_LABELS[this.data.activeFilter] + '统计',
+      })
+    } catch (err) {
+      console.error('[loadSummary]', err)
+    }
   },
 
   async loadRecords() {
@@ -48,16 +73,9 @@ Page({
 
       let filtered = this.applyFilter(allRecords)
 
-      const totalCount = filtered.length
-      const totalKwh = filtered.reduce((s, r) => s + (r.chargeKwh || 0), 0)
-      const totalCost = filtered.reduce((s, r) => s + (r.cost || 0), 0)
-
       this.setData({
         records: allRecords,
         groupedRecords: this.groupByDate(filtered),
-        totalCount,
-        totalKwh: toFixed(totalKwh, 1),
-        totalCost: toFixed(totalCost),
         hasMore: allRecords.length < res.total,
         loading: false,
       })
@@ -104,10 +122,8 @@ Page({
     const filtered = this.applyFilter(this.data.records)
     this.setData({
       groupedRecords: this.groupByDate(filtered),
-      totalCount: filtered.length,
-      totalKwh: toFixed(filtered.reduce((s, r) => s + (r.chargeKwh || 0), 0), 1),
-      totalCost: toFixed(filtered.reduce((s, r) => s + (r.cost || 0), 0)),
     })
+    this.loadSummary()
   },
 
   onLoadMore() {
@@ -119,5 +135,6 @@ Page({
   onPullDownRefresh() {
     this.setData({ page: 1, records: [] })
     this.loadRecords().then(() => wx.stopPullDownRefresh())
+    this.loadSummary()
   },
 })

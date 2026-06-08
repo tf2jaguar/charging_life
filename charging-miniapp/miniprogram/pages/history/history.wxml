@@ -16,12 +16,12 @@
   <view class="overview-card glass-card">
     <view class="overview-row">
       <view class="overview-left">
-        <text class="overview-label">本月统计</text>
-        <text class="overview-value font-mono">{{totalCount}}<text class="overview-unit"> 次</text></text>
+        <text class="overview-label">{{summaryLabel}}</text>
+        <text class="overview-value font-mono">{{summaryCount}}<text class="overview-unit"> 次</text></text>
       </view>
       <view class="overview-right">
         <text class="overview-label">充电量 / 费用</text>
-        <text class="overview-value font-mono">{{totalKwh}}<text class="overview-unit"> kWh</text> · ¥{{totalCost}}</text>
+        <text class="overview-value font-mono">{{summaryKwh}}<text class="overview-unit"> kWh</text> · ¥{{summaryCost}}</text>
       </view>
     </view>
   </view>

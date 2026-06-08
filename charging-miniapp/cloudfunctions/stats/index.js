@@ -45,6 +45,54 @@ exports.main = async (event, context) => {
   try {
     switch (action) {
       case 'overview': {
+        // filter 模式：按时间/类型筛选，返回绝对值（供 history 页使用）
+        // period 模式：按月/年统计，含环比（供 dashboard/analytics/profile 使用）
+        const filter = data.filter
+        if (filter) {
+          let conditions = { _openid: openid }
+          if (vehicleId) conditions.vehicleId = vehicleId
+
+          const now = new Date()
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+          if (filter === 'week') {
+            const weekStart = new Date(today)
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1)
+            conditions.startTime = _.gte(weekStart)
+          } else if (filter === 'month') {
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+            conditions.startTime = _.gte(monthStart)
+          } else if (filter === 'fast') {
+            conditions.chargeType = _.in(['fast', 'super'])
+          } else if (filter === 'slow') {
+            conditions.chargeType = 'slow'
+          }
+
+          const res = await db.collection('records')
+            .where(conditions)
+            .field({ chargeKwh: true, cost: true, startTime: true })
+            .get()
+
+          const list = res.data
+          const count = list.length
+          const totalKwh = list.reduce((s, r) => s + (r.chargeKwh || 0), 0)
+          const totalCost = list.reduce((s, r) => s + (r.cost || 0), 0)
+          const days = new Set(list.map(r => {
+            const d = new Date(r.startTime)
+            return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+          })).size
+
+          return {
+            code: 0,
+            data: {
+              count: { value: count, change: 0, direction: 'same' },
+              kwh: { value: totalKwh, change: 0, direction: 'same' },
+              cost: { value: totalCost, change: 0, direction: 'same' },
+              days: { value: days, change: 0, direction: 'same' },
+            },
+          }
+        }
+
         const { start, end } = getPeriodRange(periodVal)
         const { start: prevStart, end: prevEnd } = getPrevPeriodRange(periodVal)
 
@@ -71,8 +119,43 @@ exports.main = async (event, context) => {
         const curAvgPrice = curKwh > 0 ? Math.round((curCost / curKwh) * 100) / 100 : 0
         const prevAvgPrice = prevKwh > 0 ? Math.round((prevCost / prevKwh) * 100) / 100 : 0
 
-        const curPer100 = cur.reduce((s, r) => s + (r.perHundredKwh || 0), 0) / (cur.length || 1)
-        const curPer100Cost = cur.reduce((s, r) => s + (r.perHundredCost || 0), 0) / (cur.length || 1)
+        const curAvgDuration = cur.length > 0 ? Math.round(curDuration / cur.length) : 0
+        const prevAvgDuration = prev.length > 0 ? Math.round(prevDuration / prev.length) : 0
+
+        const curAvgKwh = cur.length > 0 ? Math.round(curKwh / cur.length * 10) / 10 : 0
+        const prevAvgKwh = prev.length > 0 ? Math.round(prevKwh / prev.length * 10) / 10 : 0
+
+        // 百公里电耗/成本：按时间排序全部记录，用相邻有里程记录之间的所有充电量计算
+        function calcPer100(records) {
+          const sorted = records
+            .slice()
+            .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+          const milestones = []
+          sorted.forEach((r, i) => {
+            if (r.mileage > 0) milestones.push({ index: i, mileage: r.mileage })
+          })
+          if (milestones.length < 2) return { perHundredKwh: 0, perHundredCost: 0 }
+
+          let totalMileageDelta = 0
+          let totalKwhInRange = 0
+          let totalCostInRange = 0
+          for (let m = 1; m < milestones.length; m++) {
+            const delta = milestones[m].mileage - milestones[m - 1].mileage
+            if (delta <= 0) continue
+            totalMileageDelta += delta
+            // 累加两次里程读数之间（含前端点，不含后端点）所有记录的充电量和费用
+            for (let i = milestones[m - 1].index; i < milestones[m].index; i++) {
+              totalKwhInRange += sorted[i].chargeKwh || 0
+              totalCostInRange += sorted[i].cost || 0
+            }
+          }
+          const perHundredKwh = totalMileageDelta > 0 ? Math.round(totalKwhInRange / totalMileageDelta * 100 * 10) / 10 : 0
+          const perHundredCost = totalMileageDelta > 0 ? Math.round(totalCostInRange / totalMileageDelta * 100 * 100) / 100 : 0
+          return { perHundredKwh, perHundredCost }
+        }
+
+        const curPer100 = calcPer100(cur)
+        const prevPer100 = calcPer100(prev)
 
         function calcChange(curVal, prevVal, lowerIsBetter) {
           if (!prevVal || prevVal === 0) return { value: curVal, change: 0, direction: 'same' }
@@ -92,8 +175,10 @@ exports.main = async (event, context) => {
             cost: calcChange(curCost, prevCost, true),
             avgPrice: calcChange(curAvgPrice, prevAvgPrice, true),
             duration: calcChange(curDuration, prevDuration, false),
-            perHundredKwh: calcChange(curPer100, curPer100, true),
-            perHundredCost: calcChange(curPer100Cost, curPer100Cost, true),
+            avgDuration: calcChange(curAvgDuration, prevAvgDuration, true),
+            avgKwh: calcChange(curAvgKwh, prevAvgKwh, false),
+            perHundredKwh: calcChange(curPer100.perHundredKwh, prevPer100.perHundredKwh, true),
+            perHundredCost: calcChange(curPer100.perHundredCost, prevPer100.perHundredCost, true),
           },
         }
       }

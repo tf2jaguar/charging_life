@@ -58,6 +58,10 @@ Page({
   async loadData() {
     this.setData({ loading: true, greeting: getGreeting() })
 
+    try {
+      await auth.initOpenId()
+    } catch (e) { /* ignore */ }
+
     if (!auth.isLoggedIn()) {
       this.setData({
         loading: false,
@@ -98,7 +102,6 @@ Page({
     }
 
     try {
-      await auth.initOpenId()
       const userInfo = auth.getUserInfo()
       if (userInfo && userInfo.nickName) {
         this.setData({ nickName: userInfo.nickName })
@@ -126,8 +129,8 @@ Page({
         overviewRes.costDisplay = hasData ? toFixed(overviewRes.cost.value) : '-'
         overviewRes.avgPriceDisplay = hasData ? toFixed(overviewRes.avgPrice.value) : '-'
         overviewRes.durationDisplay = hasData && overviewRes.duration.value ? toFixed(overviewRes.duration.value / 60, 1) : '-'
-        overviewRes.perHundredKwhDisplay = hasData ? toFixed(overviewRes.perHundredKwh.value, 1) : '-'
-        overviewRes.perHundredCostDisplay = hasData ? toFixed(overviewRes.perHundredCost.value) : '-'
+        overviewRes.perHundredKwhDisplay = hasData && overviewRes.perHundredKwh.value > 0 ? toFixed(overviewRes.perHundredKwh.value, 1) : '-'
+        overviewRes.perHundredCostDisplay = hasData && overviewRes.perHundredCost.value > 0 ? toFixed(overviewRes.perHundredCost.value) : '-'
 
         // 预计算环比文本
         function fmtChange(field, invertArrow) {

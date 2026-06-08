@@ -45,8 +45,15 @@ Page({
         overview.kwhDisplay = toFixed(overview.kwh.value, 2)
         overview.costDisplay = toFixed(overview.cost.value, 2)
         overview.avgPriceDisplay = toFixed(overview.avgPrice.value, 2)
-        overview.durationDisplay = toFixed(overview.duration.value, 2)
-        overview.avgKwhDisplay = toFixed(overview.kwh.value / (overview.count.value || 1), 2)
+        overview.durationDisplay = toFixed(overview.avgDuration.value / 60, 1)
+        overview.avgKwhDisplay = toFixed(overview.avgKwh.value, 1)
+      }
+
+      if (topStations && topStations.length) {
+        topStations.forEach(s => {
+          s.kwh = toFixed(s.kwh, 1)
+          s.cost = toFixed(s.cost)
+        })
       }
 
       this.setData({

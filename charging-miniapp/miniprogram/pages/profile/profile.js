@@ -44,7 +44,7 @@ Page({
         const vehicleId = app.getCurrentVehicleId()
         const [vehicles, statsRes] = await Promise.all([
           callCloud('vehicle', { action: 'list' }),
-          callCloud('stats', { action: 'overview', period: 'year', vehicleId }),
+          callCloud('stats', { action: 'overview', filter: 'all', vehicleId }),
         ])
 
         this.setData({
@@ -54,7 +54,7 @@ Page({
           vehicles: vehicles || [],
           totalKwh: statsRes && statsRes.kwh ? toFixed(statsRes.kwh.value, 1) : '-',
           totalCost: statsRes && statsRes.cost ? '¥' + toFixed(statsRes.cost.value) : '-',
-          totalDays: statsRes && statsRes.count && statsRes.count.value > 0 ? statsRes.count.value : '-',
+          totalDays: statsRes && statsRes.days && statsRes.days.value > 0 ? statsRes.days.value : '-',
           settings: userInfo && userInfo.settings ? userInfo.settings : this.data.settings,
         })
       } else {

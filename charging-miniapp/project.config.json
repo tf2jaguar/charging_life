@@ -38,7 +38,7 @@
   },
   "appid": "wxf00632c8b3e1a55b",
   "projectname": "charging-life",
-  "cloudfunctionTemplateRoot": "",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "condition": {},
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},

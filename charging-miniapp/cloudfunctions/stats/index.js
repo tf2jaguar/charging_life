@@ -33,7 +33,7 @@ function getPrevPeriodRange(period) {
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
-  const { action, period, year, month, vehicleId } = event
+  const { action, period, year, month, vehicleId, filter } = event
   const periodVal = period || 'month'
 
   function addVehicleFilter(conditions) {
@@ -47,7 +47,6 @@ exports.main = async (event, context) => {
       case 'overview': {
         // filter 模式：按时间/类型筛选，返回绝对值（供 history 页使用）
         // period 模式：按月/年统计，含环比（供 dashboard/analytics/profile 使用）
-        const filter = data.filter
         if (filter) {
           let conditions = { _openid: openid }
           if (vehicleId) conditions.vehicleId = vehicleId
@@ -324,6 +323,7 @@ exports.main = async (event, context) => {
         return { code: -1, msg: '未知action' }
     }
   } catch (err) {
+    console.error('云函数执行异常', err); // 新增：打印完整错误栈
     return { code: -1, msg: err.message }
   }
 }

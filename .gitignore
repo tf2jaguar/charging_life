@@ -1,0 +1,8 @@
+charging-miniapp/cloudfunctions/login/node_modules
+charging-miniapp/cloudfunctions/login/package-lock.json
+charging-miniapp/cloudfunctions/record/node_modules
+charging-miniapp/cloudfunctions/record/package-lock.json
+charging-miniapp/cloudfunctions/stats/node_modules
+charging-miniapp/cloudfunctions/stats/package-lock.json
+charging-miniapp/cloudfunctions/vehicle/node_modules
+charging-miniapp/cloudfunctions/vehicle/package-lock.json

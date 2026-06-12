@@ -107,18 +107,20 @@ Page({
         this.setData({ nickName: userInfo.nickName })
       }
 
-      const vehicleId = app.getCurrentVehicleId()
+      let vehicleId = app.getCurrentVehicleId()
+      const vehicles = await callCloud('vehicle', { action: 'list' })
+      const defaultVehicle = vehicleId
+        ? (vehicles || []).find(v => v._id === vehicleId) || (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
+        : (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
+      if (defaultVehicle) {
+        vehicleId = defaultVehicle._id
+      }
 
-      const [vehicles, overviewRes, recentRes, calendarRes] = await Promise.all([
-        callCloud('vehicle', { action: 'list' }),
+      const [overviewRes, recentRes, calendarRes] = await Promise.all([
         callCloud('stats', { action: 'overview', period: 'month', vehicleId }),
         callCloud('stats', { action: 'recentRecords', limit: 2, vehicleId }),
         callCloud('stats', { action: 'calendar', vehicleId }),
       ])
-
-      const defaultVehicle = vehicleId
-        ? (vehicles || []).find(v => v._id === vehicleId) || (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
-        : (vehicles || []).find(v => v.isDefault) || (vehicles && vehicles[0]) || null
       const lastRecord = (recentRes && recentRes[0]) || null
       const lastChargeKwh = lastRecord ? toFixed(lastRecord.chargeKwh, 1) : ''
       const lastChargeTimeText = lastRecord ? formatRelativeDate(lastRecord.startTime) : ''

@@ -46,7 +46,11 @@ Page({
   async loadVehicles() {
     try {
       const vehicles = await callCloud('vehicle', { action: 'list' })
-      this.setData({ vehicles: vehicles || [] })
+      const list = (vehicles || []).map(v => {
+        v.displayName = v.brand + ' ' + v.model
+        return v
+      })
+      this.setData({ vehicles: list })
     } catch (e) {
       console.error(e)
     }

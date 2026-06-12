@@ -2,7 +2,7 @@
   <!-- 车辆信息 -->
   <view class="form-group glass-card" wx:if="{{record.vehicleInfo}}">
     <view class="form-label">
-      <text class="form-icon">🚗</text>
+      <image class="form-icon-img" src="/assets/icons/car-blue.svg" mode="aspectFit" />
       <text>车辆信息</text>
     </view>
     <view class="vehicle-info-box">
@@ -14,7 +14,7 @@
   <!-- 充电站 -->
   <view class="form-group glass-card">
     <view class="form-label">
-      <text class="form-icon">📍</text>
+      <image class="form-icon-img" src="/assets/icons/map-blue.svg" mode="aspectFit" />
       <text>充电站名称</text>
       <text class="optional-tag">选填</text>
     </view>
@@ -31,7 +31,7 @@
     <view wx:else class="edit-field">
       <input class="input-field" placeholder="输入或选择充电站" value="{{editStationName}}" bindinput="onEditStationInput" />
       <view class="form-label" style="margin-top: 24rpx;">
-        <text class="form-icon">⚡</text>
+        <image class="form-icon-img" src="/assets/icons/flashlight-blue.svg" mode="aspectFit" />
         <text>充电类型</text>
       </view>
       <charge-type-radio value="{{editChargeType}}" bind:change="onEditChargeTypeChange" />
@@ -41,7 +41,7 @@
   <!-- 充电时间 -->
   <view class="form-group glass-card">
     <view class="form-label">
-      <text class="form-icon">📅</text>
+      <image class="form-icon-img" src="/assets/icons/clock-active.svg" mode="aspectFit" />
       <text>充电时间</text>
       <text wx:if="{{isEditMode}}" class="required-tag">必填</text>
     </view>
@@ -103,7 +103,7 @@
   <!-- 电量可视化 -->
   <view class="form-group glass-card">
     <view class="form-label">
-      <text class="form-icon">🔋</text>
+      <image class="form-icon-img" src="/assets/icons/battery-blue.svg" mode="aspectFit" />
       <text>电量信息</text>
       <text class="optional-tag">选填</text>
     </view>
@@ -136,7 +136,7 @@
   <!-- 充电量与费用 -->
   <view class="form-group glass-card">
     <view class="form-label">
-      <text class="form-icon">📊</text>
+      <image class="form-icon-img" src="/assets/icons/bill-blue.svg" mode="aspectFit" />
       <text>充电量与费用</text>
       <text wx:if="{{isEditMode}}" class="required-tag">必填</text>
     </view>
@@ -179,7 +179,7 @@
   <!-- 充电效率 -->
   <view class="form-group glass-card" wx:if="{{!isEditMode}}">
     <view class="form-label">
-      <text class="form-icon">📈</text>
+      <image class="form-icon-img" src="/assets/icons/line-chart-blue.svg" mode="aspectFit" />
       <text>充电效率</text>
     </view>
     <view class="efficiency-grid">
@@ -197,7 +197,7 @@
   <!-- 里程 -->
   <view class="form-group glass-card" wx:if="{{record.mileage || isEditMode}}">
     <view class="form-label">
-      <text class="form-icon">🗺</text>
+      <image class="form-icon-img" src="/assets/icons/mileage-blue.svg" mode="aspectFit" />
       <text>充电完成时仪表盘总里程</text>
       <text class="optional-tag">选填</text>
     </view>

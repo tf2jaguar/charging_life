@@ -3,7 +3,7 @@
   <view class="calendar-title-row">
     <view class="calendar-title-left">
       <view class="calendar-title-icon">
-        <text>📅</text>
+        <image class="calendar-icon-img" src="/assets/icons/calendar-blue.svg" mode="aspectFit" />
       </view>
       <text class="calendar-title-text">充电日历</text>
     </view>

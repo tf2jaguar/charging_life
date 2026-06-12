@@ -23,7 +23,7 @@
     <!-- 车辆信息卡 -->
     <view class="vehicle-card glass-card" bindtap="onVehicleCardTap" wx:if="{{defaultVehicle}}">
       <view class="vehicle-content">
-        <view class="vehicle-icon">🚗</view>
+        <view class="vehicle-icon"><image class="vehicle-icon-img" src="/assets/icons/car-blue.svg" mode="aspectFit" /></view>
         <view class="vehicle-info">
           <text class="vehicle-name">{{defaultVehicle.brand}} {{defaultVehicle.model}}</text>
           <text class="vehicle-trim">{{defaultVehicle.trim}} · {{defaultVehicle.batteryCapacity}}kWh</text>
@@ -69,7 +69,7 @@
     <text class="section-title">本月概览</text>
     <view class="overview-grid">
       <stat-card
-        icon="⚡" iconBg="rgba(8,145,178,0.1)" iconColor="#0891B2"
+        iconSrc="/assets/icons/flashlight-blue.svg" iconBg="rgba(8,145,178,0.1)" iconColor="#0891B2"
         label="充电次数"
         value="{{overview.count.value || '-'}}"
         unit="次"
@@ -77,7 +77,7 @@
         changePositive="{{overview.countPositive}}"
       />
       <stat-card
-        icon="✓" iconBg="rgba(34,197,94,0.1)" iconColor="#22C55E"
+        iconSrc="/assets/icons/flashlight-circle-green.svg" iconBg="rgba(34,197,94,0.1)" iconColor="#22C55E"
         label="充电量"
         value="{{overview.kwh.value > 0 ? overview.kwh.value : '-'}}"
         unit="kWh"
@@ -86,7 +86,7 @@
       />
 
       <stat-card
-        icon="⏱" iconBg="rgba(139,92,246,0.1)" iconColor="#8B5CF6"
+        iconSrc="/assets/icons/clock-puper.svg" iconBg="rgba(139,92,246,0.1)" iconColor="#8B5CF6"
         label="充电总时长"
         value="{{overview.durationDisplay}}"
         unit="{{overview.durationDisplay === '-' ? '' : '小时'}}"
@@ -94,15 +94,15 @@
         changePositive="{{overview.durationPositive}}"
       />
       <stat-card
-        icon="💰" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
+        iconSrc="/assets/icons/money-ori.svg" iconBg="rgba(245,158,11,0.1)" iconColor="#D97706"
         label="充电费用"
         value="{{overview.costDisplay}}"
         change="{{overview.costChangeText}}"
         changePositive="{{overview.costPositive}}"
       />
-      
+
       <stat-card
-        icon="📈" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
+        iconSrc="/assets/icons/line-chart-blue.svg" iconBg="rgba(34,211,238,0.1)" iconColor="#22D3EE"
         label="平均单价"
         value="{{overview.avgPriceDisplay === '-' ? '-' : '¥' + overview.avgPriceDisplay}}"
         unit="{{overview.avgPriceDisplay === '-' ? '' : '/kWh'}}"
@@ -110,7 +110,7 @@
         changePositive="{{overview.avgPricePositive}}"
       />
       <stat-card
-        icon="🔋" iconBg="rgba(244,63,94,0.1)" iconColor="#F43F5E"
+        iconSrc="/assets/icons/flashlight-red.svg" iconBg="rgba(244,63,94,0.1)" iconColor="#F43F5E"
         label="百公里电耗"
         value="{{overview.perHundredKwhDisplay}}"
         unit="{{overview.perHundredKwhDisplay === '-' ? '' : 'kWh'}}"
@@ -118,7 +118,7 @@
         changePositive="{{overview.perHundredKwhPositive}}"
       />
       <stat-card
-        icon="💰" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
+        iconSrc="/assets/icons/bill-green.svg" iconBg="rgba(16,185,129,0.1)" iconColor="#10B981"
         label="百公里成本"
         value="{{overview.perHundredCostDisplay === '-' ? '-' : '¥' + overview.perHundredCostDisplay}}"
         change="{{overview.perHundredCostChangeText}}"
@@ -156,7 +156,9 @@
         bindtap="goToDetail"
       >
         <view class="recent-item-left">
-          <view class="recent-item-icon {{item.chargeType === 'super' ? 'icon-super' : item.chargeType === 'slow' ? 'icon-slow' : 'icon-fast'}}">⚡</view>
+          <view class="recent-item-icon {{item.chargeType === 'super' ? 'icon-super' : item.chargeType === 'slow' ? 'icon-slow' : 'icon-fast'}}">
+            <image class="flashlight-icon" src="{{item.chargeType === 'super' ? '/assets/icons/flashlight-puper.svg' : item.chargeType === 'slow' ? '/assets/icons/flashlight-green.svg' : '/assets/icons/flashlight-blue.svg'}}" mode="aspectFit" />
+          </view>
           <view class="recent-item-info">
             <text class="recent-item-name">{{item.stationName}}</text>
             <text class="recent-item-time">{{item.timeText}}</text>
@@ -178,13 +180,8 @@
         <text class="picker-close" bindtap="onVehiclePickerClose">✕</text>
       </view>
       <view class="picker-list">
-        <view class="picker-item {{!currentVehicleId ? 'picker-item-active' : ''}}" bindtap="onSelectVehicle" data-id="">
-          <view class="picker-item-icon">🚘</view>
-          <text class="picker-item-name">全部车辆</text>
-          <text wx:if="{{!currentVehicleId}}" class="picker-item-check">✓</text>
-        </view>
         <view wx:for="{{vehicles}}" wx:key="_id" class="picker-item {{currentVehicleId === item._id ? 'picker-item-active' : ''}}" bindtap="onSelectVehicle" data-id="{{item._id}}">
-          <view class="picker-item-icon">🚗</view>
+          <view class="picker-item-icon"><image class="picker-item-icon-img" src="/assets/icons/car-blue.svg" mode="aspectFit" /></view>
           <view class="picker-item-info">
             <text class="picker-item-name">{{item.brand}} {{item.model}}</text>
             <text class="picker-item-trim">{{item.trim}} · {{item.batteryCapacity}}kWh</text>

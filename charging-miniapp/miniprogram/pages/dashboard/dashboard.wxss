@@ -88,6 +88,11 @@
   font-size: 44rpx;
 }
 
+.vehicle-icon-img {
+  width: 52rpx;
+  height: 52rpx;
+}
+
 .vehicle-info {
   flex: 1;
   min-width: 0;
@@ -263,7 +268,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36rpx;
+}
+
+.recent-item-icon .flashlight-icon {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .icon-fast {
@@ -321,7 +330,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1000;
   display: flex;
   align-items: flex-end;
 }
@@ -383,6 +392,11 @@
   justify-content: center;
   font-size: 36rpx;
   flex-shrink: 0;
+}
+
+.picker-item-icon-img {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .picker-item-info {

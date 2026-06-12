@@ -29,6 +29,11 @@
   font-size: 32rpx;
 }
 
+.stat-icon-img {
+  width: 36rpx;
+  height: 36rpx;
+}
+
 .stat-label {
   font-size: 26rpx;
   color: #64748B;

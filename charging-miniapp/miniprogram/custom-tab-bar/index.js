@@ -1,5 +1,6 @@
 Component({
   data: {
+    show: true,
     selected: 0,
     list: [
       {

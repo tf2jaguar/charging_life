@@ -15,6 +15,11 @@
   font-size: 28rpx;
 }
 
+.form-icon-img {
+  width: 28rpx;
+  height: 28rpx;
+}
+
 .required-tag {
   font-size: 20rpx;
   color: #EF4444;

@@ -1,6 +1,7 @@
 Component({
   properties: {
     icon: { type: String, value: '⚡' },
+    iconSrc: { type: String, value: '' },
     iconBg: { type: String, value: '#0891B2' },
     iconColor: { type: String, value: '#0891B2' },
     label: { type: String, value: '' },

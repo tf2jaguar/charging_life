@@ -1,7 +1,8 @@
 <view class="stat-card {{fullSpan ? 'stat-card-full' : ''}}">
   <view class="stat-header">
     <view class="stat-icon" style="background: {{iconBg}}">
-      <text style="color: {{iconColor}}">{{icon}}</text>
+      <image wx:if="{{iconSrc}}" class="stat-icon-img" src="{{iconSrc}}" mode="aspectFit" />
+      <text wx:else style="color: {{iconColor}}">{{icon}}</text>
     </view>
     <text class="stat-label">{{label}}</text>
   </view>

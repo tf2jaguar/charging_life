@@ -7,8 +7,8 @@
     data-key="{{item.key}}"
     bindtap="onSelect"
   >
-    <view class="type-icon" style="{{value === item.key ? 'color:' + item.color : ''}}">
-      <text class="icon-bolt" style="{{value === item.key ? 'color:' + item.color : ''}}">⚡</text>
+    <view class="type-icon">
+      <image class="flashlight-icon" src="{{item.icon}}" mode="aspectFit" />
     </view>
     <text class="type-label">{{item.label}}</text>
   </view>

@@ -21,8 +21,16 @@
 }
 
 .type-icon {
-  font-size: 32rpx;
-  color: #94A3B8;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flashlight-icon {
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .type-label {

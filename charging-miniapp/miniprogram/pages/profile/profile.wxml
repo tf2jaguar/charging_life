@@ -53,7 +53,7 @@
     </view>
     <view class="vehicle-list">
       <view wx:for="{{vehicles}}" wx:key="_id" class="vehicle-item">
-        <view class="vehicle-icon-box {{item.isDefault ? 'vehicle-icon-default' : 'vehicle-icon-other'}}">🚗</view>
+        <view class="vehicle-icon-box {{item.isDefault ? 'vehicle-icon-default' : 'vehicle-icon-other'}}"><image class="form-icon-img" src="/assets/icons/car-blue.svg" mode="aspectFit" /></view>
         <view class="vehicle-text">
           <text class="vehicle-name">{{item.brand}} {{item.model}}</text>
           <text class="vehicle-trim">{{item.trim}} · {{item.batteryCapacity}}kWh</text>

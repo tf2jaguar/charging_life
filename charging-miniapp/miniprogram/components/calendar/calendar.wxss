@@ -27,6 +27,11 @@
   font-size: 28rpx;
 }
 
+.calendar-icon-img {
+  width: 36rpx;
+  height: 36rpx;
+}
+
 .calendar-title-text {
   font-size: 32rpx;
   font-weight: 600;

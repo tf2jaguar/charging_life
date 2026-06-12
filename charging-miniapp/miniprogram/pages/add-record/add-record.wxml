@@ -3,7 +3,7 @@
     <!-- 选择车辆 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">🚗</text>
+        <image class="form-icon-img" src="/assets/icons/car-blue.svg" mode="aspectFit" />
         <text>选择车辆</text>
         <text class="optional-tag">选填</text>
       </view>
@@ -18,13 +18,13 @@
     <!-- 充电站 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">📍</text>
+        <image class="form-icon-img" src="/assets/icons/map-blue.svg" mode="aspectFit" />
         <text>充电站名称</text>
         <text class="optional-tag">选填</text>
       </view>
       <input class="input-field" placeholder="输入或选择充电站" value="{{stationName}}" bindinput="onStationInput" />
       <view class="form-label" style="margin-top: 32rpx;">
-        <text class="form-icon">⚡</text>
+        <image class="form-icon-img" src="/assets/icons/flashlight-blue.svg" mode="aspectFit" />
         <text>充电类型</text>
       </view>
       <charge-type-radio value="{{chargeType}}" bind:change="onChargeTypeChange" />
@@ -33,7 +33,7 @@
     <!-- 充电时间 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">📅</text>
+        <image class="form-icon-img" src="/assets/icons/clock-active.svg" mode="aspectFit" />
         <text>充电时间</text>
         <text class="required-tag">必填</text>
       </view>
@@ -81,7 +81,7 @@
     <!-- 充电量与费用 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">📊</text>
+        <image class="form-icon-img" src="/assets/icons/bill-blue.svg" mode="aspectFit" />
         <text>充电量与费用</text>
         <text class="required-tag">必填</text>
       </view>
@@ -110,7 +110,7 @@
     <!-- 电量信息 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">🔋</text>
+        <image class="form-icon-img" src="/assets/icons/battery-blue.svg" mode="aspectFit" />
         <text>电量信息</text>
         <text class="optional-tag">选填</text>
       </view>
@@ -138,7 +138,7 @@
     <!-- 里程 -->
     <view class="form-group glass-card">
       <view class="form-label">
-        <text class="form-icon">🗺</text>
+        <image class="form-icon-img" src="/assets/icons/mileage-blue.svg" mode="aspectFit" />
         <text>充电完成时仪表盘总里程</text>
         <text class="optional-tag">选填</text>
       </view>

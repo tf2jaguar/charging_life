@@ -220,11 +220,17 @@ Page({
   },
 
   onVehicleCardTap() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ show: false })
+    }
     this.setData({ showVehiclePicker: true })
   },
 
   onVehiclePickerClose() {
     this.setData({ showVehiclePicker: false })
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ show: true })
+    }
   },
 
   onSelectVehicle(e) {
@@ -232,13 +238,20 @@ Page({
     app.setCurrentVehicleId(id)
     this.setData({ showVehiclePicker: false, currentVehicleId: id })
 
-    const selVehicle = id ? this.data.vehicles.find(v => v._id === id) : null
-    wx.showToast({ title: selVehicle ? selVehicle.brand + ' ' + selVehicle.model : '全部车辆', icon: 'none' })
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ show: true })
+    }
+
+    const selVehicle = this.data.vehicles.find(v => v._id === id)
+    wx.showToast({ title: selVehicle ? selVehicle.brand + ' ' + selVehicle.model : '已切换', icon: 'none' })
     this.loadData()
   },
 
   onPickerMaskTap() {
     this.setData({ showVehiclePicker: false })
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ show: true })
+    }
   },
 
   goToProfile() {
